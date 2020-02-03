@@ -13,15 +13,13 @@ public class Surround4 {
 		 */
 		JMenuBar menus;
 		JMenu fileMenu;
-		JMenuItem newGameItem;
-		JMenuItem quitItem;
-
+		JMenuItem quitItem, newGameItem;
 
 		JFrame frame = new JFrame ("Surround game");
 		frame.setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
 
 		fileMenu = new JMenu("File");
-		quitItem = new JMenuItem("Quit");
+		quitItem = new JMenuItem("quit");
 		newGameItem = new JMenuItem("New Game");
 
 		fileMenu.add(quitItem);
@@ -32,7 +30,7 @@ public class Surround4 {
 		
 		frame.setJMenuBar(menus);
 
-		Surround4Panel panel = new Surround4Panel(quitItem);
+		Surround4Panel panel = new Surround4Panel(quitItem, newGameItem);
 		frame.add(panel);
 		frame.setSize(600, 600);
 		frame.setVisible(true);
