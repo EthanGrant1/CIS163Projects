@@ -186,6 +186,13 @@ public class Surround4Game {
 		return player;
 	}
 
+	public int previousPlayer(){
+		player = player - 1;
+		if(player == - 1)
+			player = numPlayers - 1;
+		return player;
+	}
+
 	public boolean select(int row, int col) {
 		if (board[row][col] == null ) {  //|| (cats() && board[row][col].getPlayerNumber() != player)) {
 			Cell c = new Cell(player);
@@ -194,6 +201,10 @@ public class Surround4Game {
 		}
 		else
 			return false;
+	}
+
+	public void undo(int row, int col){
+		board[row][col] = null;
 	}
 
 	public int getWinner() {
