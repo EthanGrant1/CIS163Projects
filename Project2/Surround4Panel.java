@@ -10,20 +10,29 @@ public class Surround4Panel extends JPanel {
 
     private JButton[][] board;
     private JButton undoButton;
-    private JPanel panel1;
+
+    private JPanel panel1, panel2;
     private int boardSize, numPlayers, startingPlayer, player, lastRow, lastCol;
+    private boolean undoStatus;
     private ButtonListener listen;
     private JMenuItem quitItem, newGameItem;
     private Surround4Game game;
 
-    public Surround4Panel(JMenuItem pQuitItem, JMenuItem pNewGameItem) {
+    private JLabel[] scoreLabels;
+    private int[] scores;
 
+
+    public Surround4Panel(JMenuItem pQuitItem, JMenuItem pNewGameItem, JButton pUndoButton) {
+
+        undoStatus = true;
         quitItem = pQuitItem;
         newGameItem = pNewGameItem;
+        undoButton = pUndoButton;
         listen = new ButtonListener();
 
         setLayout(new BorderLayout());
         panel1 = new JPanel();
+        panel2 = new JPanel();
 
         String strBdSize = JOptionPane.showInputDialog (null, "Enter in the size of the board: ");
         try {
@@ -64,13 +73,14 @@ public class Surround4Panel extends JPanel {
             startingPlayer = 0;
         }
 
+        createScores();
+
         game = new Surround4Game(boardSize,numPlayers,startingPlayer);
         createBoard();
 
-        undoButton = new JButton("Undo");
-        panel1.add(undoButton);
-
+        add(panel2, BorderLayout.NORTH);
         add(panel1, BorderLayout.CENTER);
+
 
         quitItem.addActionListener(listen);
         newGameItem.addActionListener(listen);
@@ -84,7 +94,9 @@ public class Surround4Panel extends JPanel {
                 System.exit(1);
 
             if (e.getSource() == newGameItem) {
+                game.reset();
                 panel1.removeAll();
+                panel2.removeAll();
                 String strBdSize = JOptionPane.showInputDialog(null, "Enter in the size of the board: ");
                 try {
                     boardSize = Integer.parseInt(strBdSize);
@@ -120,16 +132,26 @@ public class Surround4Panel extends JPanel {
                     JOptionPane.showMessageDialog(null, "Invalid input. Starting with Player 0.");
                     startingPlayer = 0;
                 }
+                createScores();
+                game = new Surround4Game(boardSize,numPlayers,startingPlayer);
                 createBoard();
+                add(panel2, BorderLayout.NORTH);
                 add(panel1, BorderLayout.CENTER);
                 panel1.revalidate();
+                panel2.revalidate();
                 panel1.repaint();
+                panel2.repaint();
             }
 
             if(e.getSource() == undoButton){
-                game.undo(lastRow, lastCol);
-                //FIX ME don't do previous player if undo was already used that turn
-                game.previousPlayer();
+                if(undoStatus) {
+                    game.undo(lastRow, lastCol);
+                    game.previousPlayer();
+                    board[lastRow][lastCol].setBackground(null);
+                    undoStatus = false;
+                }
+                else
+                    JOptionPane.showMessageDialog(null,"You already did undo this turn you dirty cheater.");
             }
 
             for (int row = 0; row < board.length; row++)
@@ -139,6 +161,7 @@ public class Surround4Panel extends JPanel {
                             //		board[row][col].setText(""+game.getCurrentPlayer());
                             lastRow = row;
                             lastCol = col;
+                            undoStatus = true;
                             player = game.nextPlayer();
                         } else
                             JOptionPane.showMessageDialog(null, "Not a valid square! Pick again.");
@@ -147,9 +170,15 @@ public class Surround4Panel extends JPanel {
             int winner = game.getWinner();
             if (winner != -1) {
                 JOptionPane.showMessageDialog(null, "Player " + winner + " Wins!");
+                scores[winner] += 1;
+                displayScores();
                 game = new Surround4Game(boardSize, numPlayers, startingPlayer);
+                for (int row = 0; row < boardSize; row++) {
+                    for (int col = 0; col < boardSize; col++) {
+                        board[row][col].setBackground(null);
+                    }
+                }
                 displayBoard();
-
             }
         }
     }
@@ -157,7 +186,7 @@ public class Surround4Panel extends JPanel {
     private void createBoard() {
 
         board = new JButton[boardSize][boardSize];
-        panel1.setLayout(new GridLayout(boardSize+1,boardSize));
+        panel1.setLayout(new GridLayout(boardSize,boardSize));
 
         for (int i = 0; i < boardSize; i++) // rows
             for (int j = 0; j < boardSize; j++) {
@@ -169,13 +198,56 @@ public class Surround4Panel extends JPanel {
 
     private void displayBoard() {
 
-        for (int row = 0; row < boardSize; row++)
+        for (int row = 0; row < boardSize; row++) {
             for (int col = 0; col < boardSize; col++) {
+
                 Cell c = game.getCell(row, col);
-                if (c != null)
+
+                if (c != null) {
                     board[row][col].setText("" + c.getPlayerNumber());
-                else
+
+                    game.evaluateRiskLevel();
+                    int risk = c.getRiskLevel();
+
+                    if (risk == 0) {
+                        board[row][col].setBackground(Color.blue);
+                    }
+
+                    if (risk == 1) {
+                        board[row][col].setBackground(Color.green);
+                    }
+
+                    if (risk == 2) {
+                        board[row][col].setBackground(Color.yellow);
+                    }
+
+                    if (risk == 3) {
+                        board[row][col].setBackground(Color.red);
+                    }
+                } else {
                     board[row][col].setText("");
+                }
             }
+        }
     }
+
+    private void createScores() {
+        scoreLabels = new JLabel[numPlayers];
+        scores = new int[numPlayers];
+
+        for(int i = 0; i < scores.length; i++)
+            scores[i] = 0;
+
+        for(int i = 0; i < scoreLabels.length; i++)
+            scoreLabels[i] = new JLabel("Player " + i + ": " + scores[i]);
+
+        for(int i = 0; i < scoreLabels.length; i++)
+            panel2.add(scoreLabels[i]);
+    }
+
+    private void displayScores(){
+        for(int i = 0; i < scores.length; i++)
+            scoreLabels[i].setText("Player " + i + ": " + scores[i]);
+    }
+
 }

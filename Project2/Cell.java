@@ -1,10 +1,11 @@
 package Project2;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class Cell {
 
-    private int playerNumber;
+    private int playerNumber, riskLevel;
     /*
      *  First, the Surround4 game class will only use the player
      *  number to determine a winner.
@@ -28,6 +29,14 @@ public class Cell {
 
     public int getPlayerNumber() {
         return playerNumber;
+    }
+
+    public void setRiskLevel(int num) {
+        riskLevel = num;
+    }
+
+    public int getRiskLevel() {
+        return riskLevel;
     }
 
 }
