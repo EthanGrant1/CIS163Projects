@@ -27,7 +27,8 @@ public class Surround4Panel extends JPanel {
 
     public Surround4Panel(JMenuItem pQuitItem, JMenuItem pNewGameItem, JButton pUndoButton) {
 
-        undoStatus = true;
+        undoStatus = false;
+
         quitItem = pQuitItem;
         newGameItem = pNewGameItem;
         undoButton = pUndoButton;
@@ -169,7 +170,7 @@ public class Surround4Panel extends JPanel {
                 }
                 else {
                     timer.stopTimer();
-                    JOptionPane.showMessageDialog(null, "You already did undo this turn you dirty cheater.");
+                    JOptionPane.showMessageDialog(null, "Unable to undo.");
                 }
             }
 
@@ -181,7 +182,14 @@ public class Surround4Panel extends JPanel {
                             //		board[row][col].setText(""+game.getCurrentPlayer());
                             lastRow = row;
                             lastCol = col;
-                            undoStatus = true;
+                            int playerEliminated = game.getEliminated();
+                            if(playerEliminated != -1){
+                                JOptionPane.showMessageDialog(null, "Player " + playerEliminated
+                                        + " has been eliminated.");
+                                undoStatus = false;
+                            }
+                            else
+                                undoStatus = true;
                             player = game.nextPlayer();
                         }
 
@@ -193,6 +201,7 @@ public class Surround4Panel extends JPanel {
                 }
             }
 
+            game.eliminatePlayerSpace();
             displayBoard();
             timer.resetTimer();
 
@@ -210,6 +219,7 @@ public class Surround4Panel extends JPanel {
                 }
                 displayBoard();
                 timer.resetTimer();
+                undoStatus = false;
             }
         }
     }
@@ -258,6 +268,7 @@ public class Surround4Panel extends JPanel {
                 }
                 else {
                     board[row][col].setText("");
+                    board[row][col].setBackground(null);
                 }
             }
         }
@@ -266,6 +277,11 @@ public class Surround4Panel extends JPanel {
     private void createScores() {
         scoreLabels = new JLabel[numPlayers];
         scores = new int[numPlayers];
+
+        //The number of rows changes to fit the number of players
+        //so all scores stay on screen
+        int tempRow = numPlayers / 5 + 1;
+        panel2.setLayout(new GridLayout(tempRow,1));
 
         for(int i = 0; i < scores.length; i++)
             scores[i] = 0;
