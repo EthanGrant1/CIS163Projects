@@ -40,19 +40,6 @@ public class Surround4Game {
 		return board[row][col];
 	}
 
-	public void setCurrentPlayer(int p) { player = p; }
-
-	public int getCurrentPlayer() {
-		return player;
-	}
-
-	public void setNumPlayers(int np) { numPlayers = np; }
-
-	public int getNumPlayers() { return numPlayers; }
-
-	public int getBoardSize(){ return boardSize; }
-
-
 	public void evaluateRiskLevel() {
 
 		int edge = boardSize - 1;
