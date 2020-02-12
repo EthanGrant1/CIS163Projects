@@ -17,7 +17,7 @@ public class Surround4Game {
 	private Cell[][] board;
 
 	/** The number of current player, the size of the board,
-	    and the number of players */
+	 and the number of players */
 	private int player, boardSize, numPlayers;
 
 	/** Determines whether or not the player is eliminated */

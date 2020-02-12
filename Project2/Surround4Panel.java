@@ -40,6 +40,10 @@ public class Surround4Panel extends JPanel {
         panel3 = new JPanel();
 
         String strBdSize = JOptionPane.showInputDialog (null, "Enter in the size of the board: ");
+        if(strBdSize == null){
+            JOptionPane.showMessageDialog(null, "Game canceled");
+            System.exit(0);
+        }
         try {
             boardSize = Integer.parseInt(strBdSize);
             if(boardSize <= 3 || boardSize >= 20) {
@@ -53,6 +57,10 @@ public class Surround4Panel extends JPanel {
         }
 
         String strNumPlayers = JOptionPane.showInputDialog (null, "Enter the number of players: ");
+        if(strNumPlayers == null){
+            JOptionPane.showMessageDialog(null, "Game canceled");
+            System.exit(0);
+        }
         try {
             numPlayers = Integer.parseInt(strNumPlayers);
             if(numPlayers < 2 || numPlayers > 99) {
@@ -66,6 +74,10 @@ public class Surround4Panel extends JPanel {
         }
 
         String strStartingPlayer = JOptionPane.showInputDialog(null, "Who starts first?");
+        if(strStartingPlayer == null){
+            JOptionPane.showMessageDialog(null, "Game canceled");
+            System.exit(0);
+        }
         try{
             startingPlayer = Integer.parseInt(strStartingPlayer);
             if(startingPlayer < 0 || startingPlayer > numPlayers - 1){
