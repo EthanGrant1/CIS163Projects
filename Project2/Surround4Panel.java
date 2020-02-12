@@ -191,17 +191,22 @@ public class Surround4Panel extends JPanel {
                     if (board[row][col] == e.getSource()) {
 
                         if (game.select(row, col)) {
-                            //		board[row][col].setText(""+game.getCurrentPlayer());
                             lastRow = row;
                             lastCol = col;
+                            undoStatus = true;
                             int playerEliminated = game.getEliminated();
-                            if(playerEliminated != -1){
+                            //If one move created multiple surround scenarios, keep eliminating until
+                            //there are no more surrounds
+                            while(playerEliminated != -1){
+                                timer.stopTimer();
                                 JOptionPane.showMessageDialog(null, "Player " + playerEliminated
                                         + " has been eliminated.");
+                                game.eliminatePlayerSpace();
+                                displayBoard();
+                                playerEliminated = game.getEliminated();
+                                //Cannot undo if the last move eliminated someone
                                 undoStatus = false;
                             }
-                            else
-                                undoStatus = true;
                             player = game.nextPlayer();
                         }
 
@@ -213,7 +218,6 @@ public class Surround4Panel extends JPanel {
                 }
             }
 
-            game.eliminatePlayerSpace();
             displayBoard();
             timer.resetTimer();
 

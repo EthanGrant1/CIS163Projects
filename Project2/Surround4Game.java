@@ -1,29 +1,39 @@
 package Project2;
 
 import javax.swing.*;
+import java.util.*;
 
 /**********************************************************
  * This is a class that creates a game
  * of Surround4. The objective of the game
  * is to pick a tile on a board and surround
- * the opponent with your tiles.
+ * the opponent with your tiles. Players are
+ * eliminated if they are surrounded by 4 tiles
+ * that are not their own and the winner is
+ * the last player remaining
  *
- * @author Tim Nguyen and Etham Grant
+ * @author Tim Nguyen and Ethan Grant
  */
 
 public class Surround4Game {
 
-	/** A 2 dimensional array of Cell objects */
+	/**
+	 * A 2 dimensional array of Cell objects
+	 */
 	private Cell[][] board;
 
-	/** The number of current player, the size of the board,
-	 and the number of players */
+	/**
+	 * The number of current player, the size of the board,
+	 * and the number of players
+	 */
 	private int player, boardSize, numPlayers;
 
-	/** Determines whether or not the player is eliminated */
+	/**
+	 * Determines whether or not the player is eliminated
+	 */
 	private int[] playerStatus;
 
-	/**********************************************************
+	/******************************************************************
 	 * This method is the default constructor for Surround4Game
 	 * that sets all variables to default.
 	 */
@@ -44,22 +54,21 @@ public class Surround4Game {
 		numPlayers = 2;
 
 		// Creates an array of integers which stores the status
-		// of players
+		// of players (with 1 indicating that they are still in)
 		playerStatus = new int[10];
-		for(int i = 0; i < playerStatus.length; i++)
+		for (int i = 0; i < playerStatus.length; i++)
 			playerStatus[i] = 1;
 	}
 
-	/**********************************************************
-	 * This method allows the user to create a custom
-	 * Surround4Game
+	/******************************************************************
+	 * This method allows the user to create a custom Surround4Game
 	 *
 	 * @param boardSize is the size of the 2D array of Cells
 	 *                  (boardSize x boardSize)
 	 * @param numPlayers is the number of players
 	 * @param player is the current active player
 	 */
-	public Surround4Game(int boardSize, int numPlayers, int player){
+	public Surround4Game(int boardSize, int numPlayers, int player) {
 		// Sets all instance variables equal to parameters
 		this.boardSize = boardSize;
 		this.numPlayers = numPlayers;
@@ -69,12 +78,12 @@ public class Surround4Game {
 		board = new Cell[boardSize][boardSize];
 
 		// Sets all player's status to "in the game"
-		playerStatus = new int [numPlayers];
-		for(int i = 0; i < playerStatus.length; i++)
+		playerStatus = new int[numPlayers];
+		for (int i = 0; i < playerStatus.length; i++)
 			playerStatus[i] = 1;
 	}
 
-	/**********************************************************
+	/******************************************************************
 	 * This method removes all player numbers from the board
 	 */
 	public void reset() {
@@ -88,7 +97,7 @@ public class Surround4Game {
 		}
 	}
 
-	/**********************************************************
+	/******************************************************************
 	 * This method is used to return the Cell object at the
 	 * position (row , col) given the parameters
 	 *
@@ -101,7 +110,7 @@ public class Surround4Game {
 		return board[row][col];
 	}
 
-	/**********************************************************
+	/******************************************************************
 	 * This method sets the risk level of the tiles on the
 	 * board depending on the number of tiles surrounding it
 	 */
@@ -122,14 +131,14 @@ public class Surround4Game {
 					if (row == 0 && col == 0) {
 						// right filled
 						if ((board[0][1] != null && board[1][0] == null)) {
-							if (board[row][col].getPlayerNumber() != board[0][1].getPlayerNumber()){
+							if (board[row][col].getPlayerNumber() != board[0][1].getPlayerNumber()) {
 								board[row][col].setRiskLevel(3);
 							}
 						}
 
 						//bottom filled
 						if ((board[0][1] == null && board[1][0] != null)) {
-							if (board[row][col].getPlayerNumber() != board[1][0].getPlayerNumber()){
+							if (board[row][col].getPlayerNumber() != board[1][0].getPlayerNumber()) {
 								board[row][col].setRiskLevel(3);
 							}
 						}
@@ -451,10 +460,10 @@ public class Surround4Game {
 						}
 
 						// bottom left top filled
-						if (board[row][col - 1] == null && board[row - 1][col] != null && board[row][col + 1] != null
+						if (board[row][col - 1] != null && board[row - 1][col] != null && board[row][col + 1] == null
 								&& board[row + 1][col] != null) {
 							if (board[row - 1][col].getPlayerNumber() != board[row][col].getPlayerNumber() &&
-									board[row][col + 1].getPlayerNumber() != board[row][col].getPlayerNumber() &&
+									board[row][col - 1].getPlayerNumber() != board[row][col].getPlayerNumber() &&
 									board[row + 1][col].getPlayerNumber() != board[row][col].getPlayerNumber()) {
 								board[row][col].setRiskLevel(3);
 							}
@@ -557,7 +566,7 @@ public class Surround4Game {
 		}
 	}
 
-	/**********************************************************
+	/******************************************************************
 	 * This method advances the player number to the next one
 	 *
 	 * @return the new player number
@@ -568,27 +577,26 @@ public class Surround4Game {
 			player = player + 1;
 			if (player == numPlayers)
 				player = 0;
-		}while(playerStatus[player] == -1);
+		} while (playerStatus[player] == -1);
 		return player;
 	}
 
-	/**********************************************************
-	 * This method decrements the player number to the previous
-	 * one
+	/******************************************************************
+	 * This method decrements the player number to the previous one
 	 *
 	 * @return the new player number
 	 */
-	public int previousPlayer(){
+	public int previousPlayer() {
 		//Skips to the other player behind if the very last player is eliminated
 		do {
 			player = player - 1;
 			if (player == -1)
 				player = numPlayers - 1;
-		}while(playerStatus[player] == -1);
+		} while (playerStatus[player] == -1);
 		return player;
 	}
 
-	/**********************************************************
+	/******************************************************************
 	 * This method selects and creates a new Cell object using
 	 * the current player's number
 	 *
@@ -602,7 +610,7 @@ public class Surround4Game {
 
 		// If the Cell is not null, the action of filling the
 		// Cell is carried out
-		if (board[row][col] == null ) {  //|| (cats() && board[row][col].getPlayerNumber() != player)) {
+		if (board[row][col] == null) {  //|| (cats() && board[row][col].getPlayerNumber() != player)) {
 			Cell c = new Cell(player);
 			board[row][col] = c;
 			return true;
@@ -612,38 +620,37 @@ public class Surround4Game {
 			return false;
 	}
 
-	/**********************************************************
+	/******************************************************************
 	 * This method will undo the previous action taken, and set
 	 * that Cell back to null
 	 *
 	 * @param row is the row of the Cell to undo
 	 * @param col is the column of the Cell to undo
 	 */
-	public void undo(int row, int col){
+	public void undo(int row, int col) {
 
 		// Sets the Cell at the given row and column back to null
 		board[row][col] = null;
 	}
 
-	/**********************************************************
+	/******************************************************************
 	 * This method eliminates and takes a player out of the game
 	 *
 	 * @param playerNumber is the player to eliminate
 	 */
-	public void eliminatePlayer(int playerNumber){
+	public void eliminatePlayer(int playerNumber) {
 
 		// Sets the status of the player to "not in the game"
 		playerStatus[playerNumber] = -1;
 	}
 
-	/**********************************************************
-	 * This method sets all of the eliminated player's spaces
-	 * to null
+	/******************************************************************
+	 * This method sets all of the eliminated player's spaces to null
 	 */
-	public void eliminatePlayerSpace(){
+	public void eliminatePlayerSpace() {
 
 		// Sweeps the entire array of player statuses
-		for(int i = 0; i < playerStatus.length; i++)
+		for (int i = 0; i < playerStatus.length; i++)
 			if (playerStatus[i] == -1)
 
 				// Sweeps the entire board of Cells
@@ -653,40 +660,43 @@ public class Surround4Game {
 						// If there are Cells that contain the
 						// eliminated player's number, they are
 						// set back to null
-						if(board[row][col] != null
+						if (board[row][col] != null
 								&& board[row][col].getPlayerNumber() == i)
 							board[row][col] = null;
 	}
 
-	/**********************************************************
-	 * This method returns the number of the player that won
-	 * the game
+	/******************************************************************
+	 * This method returns the number of the player that won the game
 	 *
 	 * @return the number of the winning player
 	 */
-	public int getWinner(){
+	public int getWinner() {
 
 		// Counts the number of players that are still in the game
 		int countPlayersStillIn = 0;
-		for(int i = 0; i < playerStatus.length; i++)
-			if(playerStatus[i] == 1)
+		for (int i = 0; i < playerStatus.length; i++)
+			if (playerStatus[i] == 1)
 				countPlayersStillIn++;
 
 		//If there is only one player left, return their number
-		if(countPlayersStillIn == 1)
-			for(int i = 0; i < playerStatus.length; i++)
-				if(playerStatus[i] == 1)
+		if (countPlayersStillIn == 1)
+			for (int i = 0; i < playerStatus.length; i++)
+				if (playerStatus[i] == 1)
 					return i;
 		return -1;
 	}
 
-	/**********************************************************
+	/******************************************************************
 	 * This method evaluates the board and checks if there are
 	 * any players that need to be eliminated from the game
 	 *
 	 * @return the number of the player that needs elimination
 	 */
 	public int getEliminated() {
+
+		//List that contains all instances that a tile is surrounded
+		//in the event that one move results in multiple surrounds
+		ArrayList<Integer> possibleEliminations = new ArrayList<Integer>();
 
 		//Gives the farthest row down and farthest col right
 		int edge = boardSize - 1;
@@ -698,91 +708,113 @@ public class Surround4Game {
 					if (row == 0 && col == 0)
 						if (board[0][1] != null && board[1][0] != null)
 							if (board[0][0].getPlayerNumber() != board[1][0].getPlayerNumber()
-									&& board[0][0].getPlayerNumber() != board[0][1].getPlayerNumber()) {
-								eliminatePlayer(board[row][col].getPlayerNumber());
-								return board[row][col].getPlayerNumber();
-							}
+									&& board[0][0].getPlayerNumber() != board[0][1].getPlayerNumber())
+								possibleEliminations.add(board[row][col].getPlayerNumber());
 
 					// bottom-left corner case
-					if(row == edge && col == 0)
-						if(board[edge][1] != null && board[edge - 1][0] != null)
-							if(board[edge][0].getPlayerNumber() != board[edge - 1][0].getPlayerNumber()
-									&& board[edge][0].getPlayerNumber() != board[edge][1].getPlayerNumber()) {
-								eliminatePlayer(board[row][col].getPlayerNumber());
-								return board[row][col].getPlayerNumber();
-							}
+					if (row == edge && col == 0)
+						if (board[edge][1] != null && board[edge - 1][0] != null)
+							if (board[edge][0].getPlayerNumber() != board[edge - 1][0].getPlayerNumber()
+									&& board[edge][0].getPlayerNumber() != board[edge][1].getPlayerNumber())
+								possibleEliminations.add(board[row][col].getPlayerNumber());
 
 					// top-right corner case
-					if(row == 0 && col == edge)
-						if(board[0][edge - 1] != null && board[1][edge] != null)
-							if(board[0][edge].getPlayerNumber() != board[1][edge].getPlayerNumber()
-									&& board[0][edge].getPlayerNumber() != board[0][edge - 1].getPlayerNumber()) {
-								eliminatePlayer(board[row][col].getPlayerNumber());
-								return board[row][col].getPlayerNumber();
-							}
+					if (row == 0 && col == edge)
+						if (board[0][edge - 1] != null && board[1][edge] != null)
+							if (board[0][edge].getPlayerNumber() != board[1][edge].getPlayerNumber()
+									&& board[0][edge].getPlayerNumber() != board[0][edge - 1].getPlayerNumber())
+								possibleEliminations.add(board[row][col].getPlayerNumber());
 
 					// bottom-right corner case
-					if(row == edge && col == edge)
-						if(board[edge][edge - 1] != null && board[edge - 1][edge] != null)
-							if(board[edge][edge].getPlayerNumber() != board[edge - 1][edge].getPlayerNumber()
-									&& board[edge][edge].getPlayerNumber() != board[edge][edge - 1].getPlayerNumber()) {
-								eliminatePlayer(board[row][col].getPlayerNumber());
-								return board[row][col].getPlayerNumber();
-							}
+					if (row == edge && col == edge)
+						if (board[edge][edge - 1] != null && board[edge - 1][edge] != null)
+							if (board[edge][edge].getPlayerNumber() != board[edge - 1][edge].getPlayerNumber()
+									&& board[edge][edge].getPlayerNumber() != board[edge][edge - 1].getPlayerNumber())
+								possibleEliminations.add(board[row][col].getPlayerNumber());
+
 
 					// left-border case (excluding corners - check 3 sides only)
 					if (row != 0 && row != edge && col == 0)
-						if (board[row-1][col] != null && board[row][col+1] != null && board[row+1][col] != null)
-							if (board[row][col].getPlayerNumber() != board[row][col+1].getPlayerNumber()
-									&& board[row][col].getPlayerNumber() != board[row+1][col].getPlayerNumber()
-									&& board[row][col].getPlayerNumber() != board[row-1][col].getPlayerNumber()) {
-								eliminatePlayer(board[row][col].getPlayerNumber());
-								return board[row][col].getPlayerNumber();
-							}
+						if (board[row - 1][col] != null && board[row][col + 1] != null && board[row + 1][col] != null)
+							if (board[row][col].getPlayerNumber() != board[row][col + 1].getPlayerNumber()
+									&& board[row][col].getPlayerNumber() != board[row + 1][col].getPlayerNumber()
+									&& board[row][col].getPlayerNumber() != board[row - 1][col].getPlayerNumber())
+								possibleEliminations.add(board[row][col].getPlayerNumber());
 
 					// top-border case
-					if(row == 0 && col != 0 && col != edge)
-						if(board[row][col-1] != null && board[row+1][col] != null && board[row][col+1] != null)
-							if(board[row][col].getPlayerNumber() != board[row+1][col].getPlayerNumber()
-									&& board[row][col].getPlayerNumber() != board[row][col+1].getPlayerNumber()
-									&& board[row][col].getPlayerNumber() != board[row][col-1].getPlayerNumber()) {
-								eliminatePlayer(board[row][col].getPlayerNumber());
-								return board[row][col].getPlayerNumber();
-							}
+					if (row == 0 && col != 0 && col != edge)
+						if (board[row][col - 1] != null && board[row + 1][col] != null && board[row][col + 1] != null)
+							if (board[row][col].getPlayerNumber() != board[row + 1][col].getPlayerNumber()
+									&& board[row][col].getPlayerNumber() != board[row][col + 1].getPlayerNumber()
+									&& board[row][col].getPlayerNumber() != board[row][col - 1].getPlayerNumber())
+								possibleEliminations.add(board[row][col].getPlayerNumber());
 
 					// right-border case
-					if(row != 0 && row != edge && col == edge)
-						if(board[row-1][col] != null && board[row][col-1] != null && board[row+1][col] != null)
-							if(board[row][col].getPlayerNumber() != board[row][col-1].getPlayerNumber()
-									&& board[row][col].getPlayerNumber() != board[row+1][col].getPlayerNumber()
-									&& board[row][col].getPlayerNumber() != board[row-1][col].getPlayerNumber()) {
-								eliminatePlayer(board[row][col].getPlayerNumber());
-								return board[row][col].getPlayerNumber();
-							}
+					if (row != 0 && row != edge && col == edge)
+						if (board[row - 1][col] != null && board[row][col - 1] != null && board[row + 1][col] != null)
+							if (board[row][col].getPlayerNumber() != board[row][col - 1].getPlayerNumber()
+									&& board[row][col].getPlayerNumber() != board[row + 1][col].getPlayerNumber()
+									&& board[row][col].getPlayerNumber() != board[row - 1][col].getPlayerNumber())
+								possibleEliminations.add(board[row][col].getPlayerNumber());
 
 					//bottom-border case
-					if(row == edge && col != 0 && col != edge)
-						if(board[row][col-1] != null && board[row-1][col] != null && board[row][col+1] != null)
-							if(board[row][col].getPlayerNumber() != board[row-1][col].getPlayerNumber()
-									&& board[row][col].getPlayerNumber() != board[row][col+1].getPlayerNumber()
-									&& board[row][col].getPlayerNumber() != board[row][col-1].getPlayerNumber()) {
-								eliminatePlayer(board[row][col].getPlayerNumber());
-								return board[row][col].getPlayerNumber();
-							}
+					if (row == edge && col != 0 && col != edge)
+						if (board[row][col - 1] != null && board[row - 1][col] != null && board[row][col + 1] != null)
+							if (board[row][col].getPlayerNumber() != board[row - 1][col].getPlayerNumber()
+									&& board[row][col].getPlayerNumber() != board[row][col + 1].getPlayerNumber()
+									&& board[row][col].getPlayerNumber() != board[row][col - 1].getPlayerNumber())
+								possibleEliminations.add(board[row][col].getPlayerNumber());
 
 					//Interior case
-					if(row != 0 && row != edge && col != 0 && col != edge)
-						if(board[row-1][col] != null && board[row][col+1] != null
-								&& board[row+1][col] != null && board[row][col-1] != null)
-							if(board[row][col].getPlayerNumber() != board[row][col+1].getPlayerNumber()
-									&& board[row][col].getPlayerNumber() != board[row+1][col].getPlayerNumber()
-									&& board[row][col].getPlayerNumber() != board[row][col-1].getPlayerNumber()
-									&& board[row][col].getPlayerNumber() != board[row-1][col].getPlayerNumber()) {
-								eliminatePlayer(board[row][col].getPlayerNumber());
-								return board[row][col].getPlayerNumber();
-							}
+					if (row != 0 && row != edge && col != 0 && col != edge)
+						if (board[row - 1][col] != null && board[row][col + 1] != null
+								&& board[row + 1][col] != null && board[row][col - 1] != null)
+							if (board[row][col].getPlayerNumber() != board[row][col + 1].getPlayerNumber()
+									&& board[row][col].getPlayerNumber() != board[row + 1][col].getPlayerNumber()
+									&& board[row][col].getPlayerNumber() != board[row][col - 1].getPlayerNumber()
+									&& board[row][col].getPlayerNumber() != board[row - 1][col].getPlayerNumber())
+								possibleEliminations.add(board[row][col].getPlayerNumber());
 				}
+
+		//If their is only one surround, just eliminate the player surrounded
+		if (possibleEliminations.size() == 1) {
+			eliminatePlayer(possibleEliminations.get(0));
+			return possibleEliminations.get(0);
+		}
+
+		//If multiple tiles were surrounded, prioritize eliminating the player
+		//that would be next after the player that just acted
+		else if (possibleEliminations.size() > 1) {
+			//If the very next player was not surrounded, check for the next player
+			//and then the next... until you get back to the player that just acted
+			int tempCurrentPlayer = nextPossiblePlayer(player);
+			for(int i = 0; i < numPlayers; i++) {
+				for (int j = 0; j < possibleEliminations.size(); j++)
+					if (tempCurrentPlayer == possibleEliminations.get(j)) {
+						eliminatePlayer(possibleEliminations.get(j));
+						return possibleEliminations.get(j);
+					}
+				tempCurrentPlayer = nextPossiblePlayer(tempCurrentPlayer);
+			}
+		}
 		return -1;
+	}
+
+	/******************************************************************
+	 * Helper method that finds the next possible player without
+	 * changing who the player in the game is and help prioritize
+	 * which player is eliminated first
+	 *
+	 * @param currentPlayer is the player currently being switched from
+	 * @return the next possible player after currentPlayer
+	 */
+	private int nextPossiblePlayer(int currentPlayer) {
+		do {
+			currentPlayer = currentPlayer + 1;
+			if (currentPlayer == numPlayers)
+				currentPlayer = 0;
+		} while (playerStatus[currentPlayer] == -1);
+		return currentPlayer;
 	}
 
 }
