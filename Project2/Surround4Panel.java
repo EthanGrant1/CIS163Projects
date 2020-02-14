@@ -207,8 +207,8 @@ public class Surround4Panel extends JPanel {
                             lastCol = col;
                             undoStatus = true;
                             int playerEliminated = game.getEliminated();
-                            //If one move created multiple surround scenarios, keep eliminating until
-                            //there are no more surrounds
+                            //If one move created multiple surround scenarios,
+                            //keep eliminating until there are no more surrounds
                             while(playerEliminated != -1){
                                 timer.stopTimer();
                                 JOptionPane.showMessageDialog(null, "Player " +

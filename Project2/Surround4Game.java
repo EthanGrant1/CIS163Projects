@@ -701,7 +701,8 @@ public class Surround4Game {
 								board[row - 1][col] == null &&
 								board[row][col + 1] != null &&
 								board[row + 1][col] == null) {
-							if (board[row][col + 1].getPlayerNumber() != board[row][col].getPlayerNumber()) {
+							if (board[row][col + 1].getPlayerNumber() !=
+									board[row][col].getPlayerNumber()) {
 								board[row][col].setRiskLevel(1);
 							}
 						}
@@ -711,7 +712,8 @@ public class Surround4Game {
 								board[row - 1][col] == null &&
 								board[row][col + 1] == null &&
 								board[row + 1][col] != null) {
-							if (board[row + 1][col].getPlayerNumber() != board[row][col].getPlayerNumber()) {
+							if (board[row + 1][col].getPlayerNumber() !=
+									board[row][col].getPlayerNumber()) {
 								board[row][col].setRiskLevel(1);
 							}
 						}
