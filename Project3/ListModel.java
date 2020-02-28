@@ -12,15 +12,15 @@ import static Project3.ScreenDisplay.CurrentParkStatus;
 
 public class ListModel extends AbstractTableModel {
     private ArrayList<CampSite> listCampSites;
-    private ArrayList<CampSite> filteredListCampSites;
+    private ArrayList<CampSite> fileredListCampSites;
 
     private ScreenDisplay display;
 
     private String[] columnNamesCurrentPark = {"Guest Name", "Est. Cost",
-            "Check in Date", "EST. Check Out Date ", "Max Power", "Num of Tenters"};
+            "Check in Date", "EST. Check out Date ", "Max Power", "Num of Tenters"};
 
     private String[] columnNamesforCheckouts = {"Guest Name", "Est. Cost",
-            "Check in Date", "ACTUAL Check Out Date ", " Real Cost"};
+            "Check in Date", "ACTUAL Check out Date ", " Real Cost"};
 
     private DateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
     private String date;
@@ -41,19 +41,19 @@ public class ListModel extends AbstractTableModel {
     private void UpdateScreen() {
         switch (display) {
             case CurrentParkStatus:
-                filteredListCampSites = (ArrayList<CampSite>) listCampSites.stream().
+                fileredListCampSites = (ArrayList<CampSite>) listCampSites.stream().
                         filter(n -> n.actualCheckOut == null).collect(Collectors.toList());
 
                 // Note: This uses Lambda function
-                Collections.sort(filteredListCampSites, (n1, n2) -> n1.getGuestName().compareTo(n2.guestName));
+                Collections.sort(fileredListCampSites, (n1, n2) -> n1.getGuestName().compareTo(n2.guestName));
                 break;
 
             case CheckOutGuest:
-                filteredListCampSites = (ArrayList<CampSite>) listCampSites.stream().
+                fileredListCampSites = (ArrayList<CampSite>) listCampSites.stream().
                         filter(n -> n.getActualCheckOut() != null).collect(Collectors.toList());
 
                 // Note: This uses an anonymous class.
-                Collections.sort(filteredListCampSites, new Comparator<CampSite>() {
+                Collections.sort(fileredListCampSites, new Comparator<CampSite>() {
                     @Override
                     public int compare(CampSite n1, CampSite n2) {
                         return n1.getGuestName().compareTo(n2.guestName);
@@ -92,7 +92,7 @@ public class ListModel extends AbstractTableModel {
 
     @Override
     public int getRowCount() {
-        return filteredListCampSites.size();     // returns number of items in the arraylist
+        return fileredListCampSites.size();     // returns number of items in the arraylist
     }
 
     @Override
@@ -109,33 +109,33 @@ public class ListModel extends AbstractTableModel {
     private Object currentParkScreen(int row, int col) {
         switch (col) {
             case 0:
-                return (filteredListCampSites.get(row).guestName);
+                return (fileredListCampSites.get(row).guestName);
 
             case 1:
-                return (filteredListCampSites.get(row).getCost(filteredListCampSites.
+                return (fileredListCampSites.get(row).getCost(fileredListCampSites.
                         get(row).estimatedCheckOut));
 
             case 2:
-                return (formatter.format(filteredListCampSites.get(row).checkIn.getTime()));
+                return (formatter.format(fileredListCampSites.get(row).checkIn.getTime()));
 
             case 3:
-                if (filteredListCampSites.get(row).estimatedCheckOut == null)
+                if (fileredListCampSites.get(row).estimatedCheckOut == null)
                     return "-";
 
-                return (formatter.format(filteredListCampSites.get(row).estimatedCheckOut.
+                return (formatter.format(fileredListCampSites.get(row).estimatedCheckOut.
                                 getTime()));
 
             case 4:
             case 5:
-                if (filteredListCampSites.get(row) instanceof RV)
+                if (fileredListCampSites.get(row) instanceof RV)
                     if (col == 4)
-                        return (((RV) filteredListCampSites.get(row)).getPower());
+                        return (((RV) fileredListCampSites.get(row)).getPower());
                     else
                         return "";
 
                 else {
                     if (col == 5)
-                        return (((TentOnly) filteredListCampSites.get(row)).
+                        return (((TentOnly) fileredListCampSites.get(row)).
                                 getNumberOfTenters());
                     else
                         return "";
@@ -148,23 +148,23 @@ public class ListModel extends AbstractTableModel {
     private Object checkOutScreen(int row, int col) {
         switch (col) {
             case 0:
-                return (filteredListCampSites.get(row).guestName);
+                return (fileredListCampSites.get(row).guestName);
 
             case 1:
-                return (filteredListCampSites.
-                        get(row).getCost(filteredListCampSites.get(row).
+                return (fileredListCampSites.
+                        get(row).getCost(fileredListCampSites.get(row).
                         estimatedCheckOut));
             case 2:
-                return (formatter.format(filteredListCampSites.get(row).checkIn.
+                return (formatter.format(fileredListCampSites.get(row).checkIn.
                                 getTime()));
 
             case 3:
-                return (formatter.format(filteredListCampSites.get(row).actualCheckOut.
+                return (formatter.format(fileredListCampSites.get(row).actualCheckOut.
                                 getTime()));
 
             case 4:
-                return (filteredListCampSites.
-                        get(row).getCost(filteredListCampSites.get(row).
+                return (fileredListCampSites.
+                        get(row).getCost(fileredListCampSites.get(row).
                         actualCheckOut
                 ));
 
@@ -179,7 +179,7 @@ public class ListModel extends AbstractTableModel {
     }
 
     public CampSite get(int i) {
-        return filteredListCampSites.get(i);
+        return fileredListCampSites.get(i);
     }
 
     public void upDate(int index, CampSite unit) {
@@ -211,6 +211,46 @@ public class ListModel extends AbstractTableModel {
         } catch (Exception ex) {
             throw new RuntimeException("Loading problem: " + display);
 
+        }
+    }
+
+    public void saveText(String filename){
+        try{
+            PrintWriter out = new PrintWriter(
+                    new BufferedWriter(new FileWriter(filename)));
+            SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy");
+            for(int i = 0; i < listCampSites.size(); i++){
+                CampSite site = listCampSites.get(i);
+                String checkInString = df.format(site.checkIn.getTime());
+                String estimatedCheckOutString = df.format(site.estimatedCheckOut.getTime());
+                String actualCheckOutString = "null";
+                if(site.actualCheckOut != null)
+                    actualCheckOutString = df.format(site.actualCheckOut.getTime());
+                
+                if(site instanceof TentOnly){
+                    out.println(site.guestName + "," + checkInString + "," +
+                            estimatedCheckOutString + "," + actualCheckOutString +
+                            "," + ((TentOnly) site).getNumberOfTenters());
+                }
+                else if(site instanceof RV){
+                    out.println(site.guestName + "," + checkInString + "," +
+                            estimatedCheckOutString + "," + actualCheckOutString +
+                            "," + ((RV) site).getPower());
+                }
+            }
+            out.close();
+        } catch(Exception e){
+            throw new RuntimeException("Saving problem! " + display);
+        }
+    }
+
+    public void loadText(String filename){
+        try{
+            FileInputStream fis = new FileInputStream(filename);
+            Scanner scnr = new Scanner(fis);
+
+        } catch(Exception e){
+            throw new RuntimeException("Loading problem: " + display);
         }
     }
 
