@@ -150,6 +150,8 @@ public class GUICampReservationSystem extends JFrame implements ActionListener{
                 String filename = chooser.getSelectedFile().getAbsolutePath();
                 if (saveSerItem == e.getSource())
                     DList.saveDatabase(filename);
+                else if(saveTextItem == comp)
+                    DList.saveText(filename);
             }
         }
 
