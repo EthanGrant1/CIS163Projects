@@ -104,4 +104,26 @@ CampSite implements Serializable {
                 ", actualCheckOut=" + checkOutStr +
                 '}';
     }
+
+    public boolean isRV() {
+        return this instanceof RV;
+    }
+
+    public boolean isTent() {
+        return this instanceof TentOnly;
+    }
+
+    public String CompareTentThenRV() {
+
+        if (this instanceof TentOnly) {
+            return "a";
+        }
+
+        if (this instanceof RV) {
+            return "b";
+        }
+
+        return "c";
+    }
+
 }
