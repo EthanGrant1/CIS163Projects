@@ -430,25 +430,24 @@ public class ListModel extends AbstractTableModel {
         try{
             PrintWriter out = new PrintWriter(
                     new BufferedWriter(new FileWriter(filename)));
-            SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy");
+            out.println(listCampSites.size());
             for(int i = 0; i < listCampSites.size(); i++){
                 CampSite site = listCampSites.get(i);
-                String checkInString = df.format(site.checkIn.getTime());
-                String estimatedCheckOutString = df.format(site.estimatedCheckOut.getTime());
-                String actualCheckOutString = "null";
-                if(site.actualCheckOut != null)
-                    actualCheckOutString = df.format(site.actualCheckOut.getTime());
+                out.println(site.getClass().getName());
+                out.println(site.getGuestName());
+                out.println(formatter.format(site.checkIn.getTime()));
+                out.println(formatter.format(site.estimatedCheckOut.getTime()));
 
-                if(site instanceof TentOnly){
-                    out.println(site.guestName + "," + checkInString + "," +
-                            estimatedCheckOutString + "," + actualCheckOutString +
-                            "," + ((TentOnly) site).getNumberOfTenters());
-                }
-                else if(site instanceof RV){
-                    out.println(site.guestName + "," + checkInString + "," +
-                            estimatedCheckOutString + "," + actualCheckOutString +
-                            "," + ((RV) site).getPower());
-                }
+                if(site.actualCheckOut != null)
+                    out.println(formatter.format(site.actualCheckOut.getTime()));
+                else
+                    out.println("null");
+
+                if(site instanceof TentOnly)
+                    out.println(((TentOnly) site).getNumberOfTenters());
+                else if(site instanceof RV)
+                    out.println(((RV) site).getPower());
+
             }
             out.close();
         } catch(Exception e){
@@ -457,11 +456,41 @@ public class ListModel extends AbstractTableModel {
     }
 
     public void loadText(String filename){
+        listCampSites.clear();
         try {
             FileInputStream fis = new FileInputStream(filename);
             Scanner scnr = new Scanner(fis);
-        }
+            int numSites = Integer.parseInt(scnr.nextLine());
+            for(int i = 0; i < numSites; i++){
+                GregorianCalendar checkIn = new GregorianCalendar();
+                GregorianCalendar estimatedCheckOut = new GregorianCalendar();
+                GregorianCalendar actualCheckOut = new GregorianCalendar();
 
+                String siteType = scnr.nextLine();
+                String guestName = scnr.nextLine();
+                checkIn.setTime(formatter.parse(scnr.nextLine()));
+                estimatedCheckOut.setTime(formatter.parse(scnr.nextLine()));
+                String temp = scnr.nextLine();
+                if(temp.equals("null"))
+                    actualCheckOut = null;
+                else
+                    actualCheckOut.setTime(formatter.parse(temp));
+
+                int tentersOrPower = Integer.parseInt(scnr.nextLine());
+                if(tentersOrPower < 0)
+                    throw new IllegalArgumentException();
+
+                if(siteType.equals("Project3.RV")) {
+                    RV rv1 = new RV(guestName, checkIn, estimatedCheckOut, actualCheckOut, tentersOrPower);
+                    listCampSites.add(rv1);
+                }
+                else if(siteType.equals("Project3.TentOnly")) {
+                    TentOnly t1 = new TentOnly(guestName, checkIn, estimatedCheckOut, actualCheckOut, tentersOrPower);
+                    listCampSites.add(t1);
+                }
+            }
+            UpdateScreen();
+        }
         catch(Exception e) {
             throw new RuntimeException("Loading problem: " + display);
         }

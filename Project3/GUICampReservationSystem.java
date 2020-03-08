@@ -147,9 +147,9 @@ public class GUICampReservationSystem extends JFrame implements ActionListener{
             OverDueDate =
                     JOptionPane.showInputDialog(null,
                             "\t\t\t" + "Enter Date \n \n" +
-                            "\t\t\t" + "Warning \n" +
-                            "Must have EXACT syntax with slashes " +
-                            "and correct format (ex: M/d/yyyy or MM/dd/yyyy)");
+                                    "\t\t\t" + "Warning \n" +
+                                    "Must have EXACT syntax with slashes " +
+                                    "and correct format (ex: M/d/yyyy or MM/dd/yyyy)");
 
             try {
                 if (OverDueDate == null) {
@@ -192,6 +192,8 @@ public class GUICampReservationSystem extends JFrame implements ActionListener{
                 String filename = chooser.getSelectedFile().getAbsolutePath();
                 if (openSerItem == comp)
                     DList.loadDatabase(filename);
+                else if(openTextItem == comp)
+                    DList.loadText(filename);
             }
         }
 
