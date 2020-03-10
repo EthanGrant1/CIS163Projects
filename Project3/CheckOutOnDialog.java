@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
@@ -81,15 +82,22 @@ public class CheckOutOnDialog extends JDialog implements ActionListener {
 			// save the information in the object
 			closeStatus = OK;
 			SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy");
+			df.setLenient(false);
 			GregorianCalendar gTemp = new GregorianCalendar();
 
 			Date d = null;
 			try {
 				d = df.parse(txtDate.getText());
 				gTemp.setTime(d);
-				campSite.setActualCheckOut(gTemp);
+				if(gTemp.after(campSite.getCheckIn()))
+					campSite.setActualCheckOut(gTemp);
+				else
+					throw new IllegalArgumentException();
 
 			} catch (ParseException e1) {
+				JOptionPane.showMessageDialog(null, "Please enter a valid date.");
+			} catch (IllegalArgumentException e1){
+				JOptionPane.showMessageDialog(null, "Check out date must be after check in.");
 			}
 
 		}

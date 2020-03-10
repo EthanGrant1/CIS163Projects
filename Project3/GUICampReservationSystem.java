@@ -143,6 +143,7 @@ public class GUICampReservationSystem extends JFrame implements ActionListener{
 
         if (overDueItemScn == comp) {
             df = new SimpleDateFormat("MM/dd/yyyy");
+            df.setLenient(false);
 
             OverDueDate =
                     JOptionPane.showInputDialog(null,
@@ -202,7 +203,7 @@ public class GUICampReservationSystem extends JFrame implements ActionListener{
             int status = chooser.showSaveDialog(null);
             if (status == JFileChooser.APPROVE_OPTION) {
                 String filename = chooser.getSelectedFile().getAbsolutePath();
-                if (saveSerItem == e.getSource())
+                if (saveSerItem == comp)
                     DList.saveDatabase(filename);
                 else if(saveTextItem == comp)
                     DList.saveText(filename);
@@ -210,17 +211,17 @@ public class GUICampReservationSystem extends JFrame implements ActionListener{
         }
 
         //MenuBar options
-        if(e.getSource() == exitItem){
+        if(exitItem == comp){
             System.exit(1);
         }
-        if(e.getSource() == reserveRVItem){
+        if(reserveRVItem == comp){
             RV RV = new RV();
             ReservationRVDialog dialog = new ReservationRVDialog(this, RV);
             if(dialog.getCloseStatus() == ReservationRVDialog.OK){
                 DList.add(RV);
             }
         }
-        if(e.getSource() == reserveTentOnlyItem){
+        if(reserveTentOnlyItem == comp){
             TentOnly tentOnly = new TentOnly();
             ReservationTentOnlyDialog dialog = new ReservationTentOnlyDialog(this, tentOnly);
             if(dialog.getCloseStatus() == ReservationTentOnlyDialog.OK){
@@ -228,20 +229,24 @@ public class GUICampReservationSystem extends JFrame implements ActionListener{
             }
         }
 
-        if (checkOutItem == e.getSource()) {
+        if (checkOutItem == comp) {
             int index = jTable.getSelectedRow();
             if (index != -1) {
                 GregorianCalendar dat = new GregorianCalendar();
 
                 CampSite unit = DList.get(index);
+
                 CheckOutOnDialog dialog = new CheckOutOnDialog(this, unit);
 
-                JOptionPane.showMessageDialog(null,
-                        "  Be sure to thank " + unit.getGuestName() +
-                                "\n for camping with us and the price is:  " +
-                                unit.getCost(unit.getActualCheckOut()) +
-                                " dollars");
-                DList.upDate(index, unit);
+                try {
+                    JOptionPane.showMessageDialog(null,
+                            "  Be sure to thank " + unit.getGuestName() +
+                                    "\n for camping with us and the price is:  " +
+                                    unit.getCost(unit.getActualCheckOut()) +
+                                    " dollars");
+                    DList.upDate(index, unit);
+                }catch(Exception e1){
+                }
             }
         }
     }
