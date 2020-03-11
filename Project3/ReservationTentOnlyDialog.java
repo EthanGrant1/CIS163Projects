@@ -1,3 +1,4 @@
+
 package Project3;
 
 import javax.swing.*;
@@ -106,34 +107,14 @@ public class ReservationTentOnlyDialog extends JDialog implements ActionListener
                 Date d2 = null;
 
                 GregorianCalendar gregTemp = new GregorianCalendar();
-                try {
-                    d1 = df.parse(txtDateCheckin.getText());
-                }
 
-                catch (ParseException e1) {
-                    JOptionPane.showMessageDialog(null, "The program " +
-                            "has encountered an error. \n ParseException - 'Incorrect Date Format' or " +
-                            "'Non-Integer'. \n Please try again.");
-
-                    throw new IllegalArgumentException();
-                }
-
+                d1 = df.parse(txtDateCheckin.getText());
                 gregTemp.setTime(d1);
                 tentOnly.setCheckIn(gregTemp);
 
                 gregTemp = new GregorianCalendar();
 
-                try {
-                    d2 = df.parse(txtDateCheckout.getText());
-                }
-
-                catch (ParseException e1) {
-                    JOptionPane.showMessageDialog(null, "The program " +
-                            "has encountered an error. \n ParseException - 'Incorrect Date Format' or " +
-                            "'Non-Integer'. \n Please try again.");
-
-                    throw new IllegalArgumentException();
-                }
+                d2 = df.parse(txtDateCheckout.getText());
 
                 if (d2.before(d1)) {
                     JOptionPane.showMessageDialog(null, "The program " +
@@ -154,25 +135,13 @@ public class ReservationTentOnlyDialog extends JDialog implements ActionListener
                     throw new IllegalArgumentException();
                 }
 
-                else {
+                else
                     tentOnly.setGuestName(txtGuestName.getText());
-                }
 
-                try {
-                    parsedTenters = Integer.parseInt(txtNumberOfTenters.getText());
-                }
+                parsedTenters = Integer.parseInt(txtNumberOfTenters.getText());
 
-                catch (NumberFormatException e1) {
-                    JOptionPane.showMessageDialog(null, "The program " +
-                            "has encountered an error. \n NumberFormatException - 'Non-Integer' " +
-                            "or 'Blank Field' or 'Null Field'. \n Please try again.");
-
-                    throw new IllegalArgumentException();
-                }
-
-                if (parsedTenters > 0) {
+                if (parsedTenters > 0)
                     tentOnly.setNumberOfTenters(parsedTenters);
-                }
 
                 else {
                     JOptionPane.showMessageDialog(null, "The program " +
@@ -181,10 +150,19 @@ public class ReservationTentOnlyDialog extends JDialog implements ActionListener
 
                     throw new IllegalArgumentException();
                 }
-            }
 
-            catch (Throwable f) {
-                setTentOnly(null);
+            } catch (ParseException e1) {
+                tentOnly = null;
+                JOptionPane.showMessageDialog(null, "The program " +
+                        "has encountered an error. \n ParseException - 'Incorrect Date Format' or " +
+                        "'Non-Integer'. \n Please try again.");
+            } catch (NumberFormatException e1) {
+                tentOnly = null;
+                JOptionPane.showMessageDialog(null, "The program " +
+                        "has encountered an error. \n NumberFormatException - 'Non-Integer' " +
+                        "or 'Blank Field' or 'Null Field'. \n Please try again.");
+            } catch (Throwable f) {
+                tentOnly = null;
                 JOptionPane.showMessageDialog(null, "Action could not " +
                         "not be completed because error(s) occurred. \n Please try again.");
             }
@@ -194,12 +172,8 @@ public class ReservationTentOnlyDialog extends JDialog implements ActionListener
         dispose();
     }
 
-    public TentOnly getTentOnly() {
+    public TentOnly getTentOnly(){
         return tentOnly;
-    }
-
-    public void setTentOnly(TentOnly tentOnly) {
-        this.tentOnly = tentOnly;
     }
 
     /**************************************************************

@@ -104,34 +104,12 @@ public class ReservationRVDialog extends JDialog implements ActionListener {
 
                 GregorianCalendar gregTemp = new GregorianCalendar();
 
-                try {
-                    d1 = df.parse(txtDateCheckin.getText());
-                }
-
-                catch (ParseException e1) {
-                    JOptionPane.showMessageDialog(null, "The program " +
-                            "has encountered an error. \n ParseException - 'Incorrect Date Format' or " +
-                            "'Non-Integer'. \n Please try again.");
-
-                    throw new IllegalArgumentException();
-                }
-
+                d1 = df.parse(txtDateCheckin.getText());
                 gregTemp.setTime(d1);
                 rv.setCheckIn(gregTemp);
 
                 gregTemp = new GregorianCalendar();
-
-                try {
-                    d2 = df.parse(txtDateCheckout.getText());
-                }
-
-                catch (ParseException e1) {
-                    JOptionPane.showMessageDialog(null, "The program " +
-                            "has encountered an error. \n ParseException - 'Incorrect Date Format' or " +
-                            "'Non-Integer'. \n Please try again.");
-
-                    throw new IllegalArgumentException();
-                }
+                d2 = df.parse(txtDateCheckout.getText());
 
                 if (d2.before(d1)) {
                     JOptionPane.showMessageDialog(null, "The program " +
@@ -152,25 +130,15 @@ public class ReservationRVDialog extends JDialog implements ActionListener {
                     throw new IllegalArgumentException();
                 }
 
-                else {
-                    rv.setGuestName(txtGuestName.getText());
-                }
+                else
+                    rv.setGuestName(txtGuestName.getText().trim());
 
-                try {
-                    parsedPower = Integer.parseInt(txtPowerSupplied.getText());
-                }
 
-                catch (NumberFormatException e1) {
-                    JOptionPane.showMessageDialog(null, "The program " +
-                            "has encountered an error. \n NumberFormatException - 'Non-Integer' " +
-                            "or 'Blank Field' or 'Null Field'. \n Please try again.");
+                parsedPower = Integer.parseInt(txtPowerSupplied.getText());
 
-                    throw new IllegalArgumentException();
-                }
-
-                if (parsedPower > 0) {
+                if (parsedPower > 0)
                     rv.setPower(parsedPower);
-                }
+
 
                 else {
                     JOptionPane.showMessageDialog(null, "The program " +
@@ -181,10 +149,18 @@ public class ReservationRVDialog extends JDialog implements ActionListener {
                     throw new IllegalArgumentException();
                 }
 
-            }
-
-            catch (Throwable f) {
-                setRv(null);
+            } catch (ParseException e1) {
+                rv = null;
+                JOptionPane.showMessageDialog(null, "The program " +
+                        "has encountered an error. \n ParseException - 'Incorrect Date Format' or " +
+                        "'Non-Integer'. \n Please try again.");
+            } catch (NumberFormatException e1) {
+                rv = null;
+                JOptionPane.showMessageDialog(null, "The program " +
+                        "has encountered an error. \n NumberFormatException - 'Non-Integer' " +
+                        "or 'Blank Field' or 'Null Field'. \n Please try again.");
+            } catch (Throwable f) {
+                rv = null;
                 JOptionPane.showMessageDialog(null, "Action could not " +
                         "not be completed because error(s) occurred. \n Please try again.");
             }
@@ -194,12 +170,8 @@ public class ReservationRVDialog extends JDialog implements ActionListener {
         dispose();
     }
 
-    public RV getRV() {
+    public RV getRV(){
         return rv;
-    }
-
-    public void setRv(RV rv) {
-        this.rv = rv;
     }
 
     /**************************************************************

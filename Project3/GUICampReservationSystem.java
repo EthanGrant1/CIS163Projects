@@ -218,36 +218,17 @@ public class GUICampReservationSystem extends JFrame implements ActionListener{
         if (reserveRVItem == comp) {
             RV RV = new RV();
             ReservationRVDialog dialog = new ReservationRVDialog(this, RV);
-            if (dialog.getCloseStatus() == ReservationRVDialog.OK) {
-                try {
-                    if (dialog.getRV() != null) {
-                        DList.add(RV);
-                    }
-
-                    else {
-                        throw new IllegalArgumentException();
-                    }
-                }
-
-                catch (Exception e1) {}
-            }
+            if (dialog.getCloseStatus() == ReservationRVDialog.OK)
+                if (dialog.getRV() != null)
+                    DList.add(RV);
         }
+
         if(reserveTentOnlyItem == comp){
             TentOnly tentOnly = new TentOnly();
             ReservationTentOnlyDialog dialog = new ReservationTentOnlyDialog(this, tentOnly);
-            if (dialog.getCloseStatus() == ReservationTentOnlyDialog.OK) {
-                try {
-                    if (dialog.getTentOnly() != null) {
-                        DList.add(tentOnly);
-                    }
-
-                    else {
-                        throw new IllegalArgumentException();
-                    }
-                }
-
-                catch (Exception e1) {}
-            }
+            if (dialog.getCloseStatus() == ReservationTentOnlyDialog.OK)
+                if (dialog.getTentOnly() != null)
+                    DList.add(tentOnly);
         }
 
         if (checkOutItem == comp) {
@@ -259,7 +240,7 @@ public class GUICampReservationSystem extends JFrame implements ActionListener{
 
                 CheckOutOnDialog dialog = new CheckOutOnDialog(this, unit);
 
-                try {
+                if(unit.actualCheckOut != null){
                     JOptionPane.showMessageDialog(null,
                             "  Be sure to thank " + unit.getGuestName() +
                                     "\n for camping with us and the price is:  " +
@@ -267,8 +248,6 @@ public class GUICampReservationSystem extends JFrame implements ActionListener{
                                     " dollars");
                     DList.upDate(index, unit);
                 }
-
-                catch(Exception e1) {}
             }
         }
     }
