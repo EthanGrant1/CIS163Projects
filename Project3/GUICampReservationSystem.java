@@ -234,19 +234,10 @@ public class GUICampReservationSystem extends JFrame implements ActionListener{
             RV RV = new RV();
             ReservationRVDialog dialog = new ReservationRVDialog(this, RV);
             if (dialog.getCloseStatus() == ReservationRVDialog.OK) {
-                try {
-                    // Uses a private method to check if exceptions occurred
-                    if (dialog.getRV() != null) {
-                        DList.add(RV);
-                    }
-
-                    else {
-                        throw new IllegalArgumentException();
-                    }
+                // Uses a private method to check if exceptions occurred
+                if (dialog.getRV() != null) {
+                    DList.add(RV);
                 }
-
-                // Does not add the RV to the list if there are exceptions
-                catch (Exception e1) {}
             }
         }
 
@@ -255,19 +246,10 @@ public class GUICampReservationSystem extends JFrame implements ActionListener{
             TentOnly tentOnly = new TentOnly();
             ReservationTentOnlyDialog dialog = new ReservationTentOnlyDialog(this, tentOnly);
             if (dialog.getCloseStatus() == ReservationTentOnlyDialog.OK) {
-                try {
-                    // Uses a private method to check if exceptions occurred
-                    if (dialog.getTentOnly() != null) {
-                        DList.add(tentOnly);
-                    }
-
-                    else {
-                        throw new IllegalArgumentException();
-                    }
+                // Uses a private method to check if exceptions occurred
+                if (dialog.getTentOnly() != null) {
+                    DList.add(tentOnly);
                 }
-
-                // Does not add the Tent to the list if exceptions occurred
-                catch (Exception e1) {}
             }
         }
 
@@ -283,8 +265,8 @@ public class GUICampReservationSystem extends JFrame implements ActionListener{
 
                 CheckOutOnDialog dialog = new CheckOutOnDialog(this, unit);
 
-                // Checks if any exceptions occurred during the checkout process
-                try {
+                // Checks to make sure a valid date was given in the checkout process
+                if(unit.actualCheckOut != null) {
                     JOptionPane.showMessageDialog(null,
                             "  Be sure to thank " + unit.getGuestName() +
                                     "\n for camping with us and the price is:  " +
@@ -292,9 +274,6 @@ public class GUICampReservationSystem extends JFrame implements ActionListener{
                                     " dollars");
                     DList.upDate(index, unit);
                 }
-
-                // Does nothing if exceptions occurred
-                catch(Exception e1) {}
             }
         }
     }
