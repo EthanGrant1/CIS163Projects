@@ -16,18 +16,18 @@ import static Project3.ScreenDisplay.SortByRVTent;
 public class ListModel extends AbstractTableModel {
 
     /** An ArrayList of CampSite objects that's used
-        to list all of the Tents or RVs in the CampSite */
+     to list all of the Tents or RVs in the CampSite */
     private ArrayList<CampSite> listCampSites;
 
     /** An ArrayList of CampSite objects that is used
-        with Lambda functions and filtering with Streams*/
+     with Lambda functions and filtering with Streams*/
     private ArrayList<CampSite> fileredListCampSites;
 
     /** What screen is currently on display in the GUI */
     private ScreenDisplay display;
 
     /** An array of Strings for the headers of each column on the
-        Current Park screen */
+     Current Park screen */
     private String[] columnNamesCurrentPark = {"Guest Name", "Est. Cost",
             "Check In Date", "Est. Check Out Date ", "Max Power", "Num. of Tenters"};
 
@@ -106,123 +106,136 @@ public class ListModel extends AbstractTableModel {
             // The current park excluding all of the people who are
             // checked out
             case CurrentParkStatus:
-                // A stream to filter the list of CampSite objects
-                fileredListCampSites = (ArrayList<CampSite>) listCampSites.stream()
-
-                        // Filters the CampSite objects that do not have an actual checkout
-                        // date (the ones that are still at the site)
-                        .filter(n -> n.actualCheckOut == null)
-                        .collect(Collectors.toList());
-
-                // Note: This uses Lambda function
-                Collections.sort(fileredListCampSites, (n1, n2) -> n1.getGuestName()
-                        .compareTo(n2.guestName));
+                UpdateScreenCurrentPark();
                 break;
 
             // The people who are already checked out of the site
             case CheckOutGuest:
-
-                // Filters the CampSite objects that have an actual checkout
-                // date (ones that are no longer on the site)
-                fileredListCampSites = (ArrayList<CampSite>) listCampSites.stream().
-                        filter(n -> n.getActualCheckOut() != null).collect(Collectors.toList());
-
-                // Note: This uses an anonymous class.
-                Collections.sort(fileredListCampSites, new Comparator<CampSite>() {
-                    @Override
-                    public int compare(CampSite n1, CampSite n2) {
-                        return n1.getGuestName().compareTo(n2.guestName);
-                    }
-                });
-
+                UpdateScreenCheckOut();
                 break;
 
-                // The overdue screen used to track if people are
-                // still in need of checking out after a specified period
+            // The overdue screen used to track if people are
+            // still in need of checking out after a specified period
             case OverDueScreen:
-
-                // Filters the CampSite objects that have an estimated checkout date
-                // (this is just an extra precaution in case an error occurs)
-                fileredListCampSites = (ArrayList<CampSite>) listCampSites.stream()
-                        .filter(n -> n.getEstimatedCheckOut() != null)
-                        .collect(Collectors.toList());
-
-                // Uses a Lambda function variant to sort the Campsites by checkout date
-                Collections.sort(fileredListCampSites, Comparator.comparing(CampSite::getEstimatedCheckOut));
+                UpdateScreenOverDue();
                 break;
 
-                // The sort by RV / Tent screen
+            // The sort by RV / Tent screen
             case SortByRVTent:
-
-                // Filters the CampSite objects that do not have an actual checkout date
-                // (ones that are still at the site)
-                fileredListCampSites = (ArrayList<CampSite>) listCampSites.stream()
-                        .filter(n -> n.actualCheckOut == null)
-                        .collect(Collectors.toList());
-
-                // Sorts the CampSite objects using a Lambda function
-
-                // Checks if there are CampSite objects that are Tents
-                Collections.sort(fileredListCampSites, Comparator.comparing(CampSite::isTent)
-                        // Sorts the CampSites by name
-                        .thenComparing(CampSite::getGuestName)
-                        // Sorts to put the RV CampSites first
-                        .thenComparing(CampSite::isRV)
-                        // Sorts the CampSites by name again
-                        .thenComparing(CampSite::getGuestName)
-                        // If there are CampSites that have the same name,
-                        // it sorts them by estimated checkout date instead
-                        .thenComparing(CampSite::getEstimatedCheckOut));
-
+                UpdateScreenSortByRVTent();
                 break;
 
-                // The sort by Tent / RV screen
+            // The sort by Tent / RV screen
             case SortByTentRV:
-
-                // Filters the CampSites that don't have an actual checkout date
-                // (ones that are still at the site)
-                fileredListCampSites = (ArrayList<CampSite>) listCampSites.stream()
-                        .filter(n -> n.actualCheckOut == null)
-                        .collect(Collectors.toList());
-
-                // Uses an anonymous class to sort the CampSites
-                Collections.sort(fileredListCampSites, new Comparator<CampSite>() {
-                    @Override
-                    // Overridden method from Comparator
-                    public int compare(CampSite o1, CampSite o2) {
-
-                        // Uses a helper method to compare the type of CampSite object
-                        int typeCompare = o1.CompareTentThenRV().compareTo(o2.CompareTentThenRV());
-
-                        // Sorts by Tent, then RV if there are 2 objects found that
-                        // are not the same type
-                        if (typeCompare != 0) {
-                            return typeCompare;
-                        }
-
-                        // After sorting by type of CampSite, the compare method
-                        // will then sort by guest name
-                        int nameCompare = o1.getGuestName().compareTo(o2.getGuestName());
-
-                        if (nameCompare != 0) {
-                            return nameCompare;
-                        }
-
-                        // If there are instances of both the type of CampSite
-                        // and the name being the same, the compare method will
-                        // then sort by estimated checkout date instead.
-                        return o1.getEstimatedCheckOut().compareTo(o2.estimatedCheckOut);
-                    }
-                });
-
+                UpdateScreenSortByTentRV();
                 break;
 
-                // A default action that is taken if the screen does not match any
-                // of the above instances
+            // A default action that is taken if the screen does not match any
+            // of the above instances
             default:
                 throw new RuntimeException("upDate is in undefined state: " + display);
         }
         fireTableStructureChanged();
+    }
+
+    private void UpdateScreenCurrentPark() {
+        // A stream to filter the list of CampSite objects
+        fileredListCampSites = (ArrayList<CampSite>) listCampSites.stream()
+
+                // Filters the CampSite objects that do not have an actual checkout
+                // date (the ones that are still at the site)
+                .filter(n -> n.actualCheckOut == null)
+                .collect(Collectors.toList());
+
+        // Note: This uses Lambda function
+        Collections.sort(fileredListCampSites, (n1, n2) -> n1.getGuestName()
+                .compareTo(n2.guestName));
+    }
+
+    private void UpdateScreenCheckOut() {
+        // Filters the CampSite objects that have an actual checkout
+        // date (ones that are no longer on the site)
+        fileredListCampSites = (ArrayList<CampSite>) listCampSites.stream().
+                filter(n -> n.getActualCheckOut() != null).collect(Collectors.toList());
+
+        // Note: This uses an anonymous class.
+        Collections.sort(fileredListCampSites, new Comparator<CampSite>() {
+            @Override
+            public int compare(CampSite n1, CampSite n2) {
+                return n1.getGuestName().compareTo(n2.guestName);
+            }
+        });
+    }
+
+    private void UpdateScreenOverDue() {
+        // Filters the CampSite objects that have an estimated checkout date
+        // (this is just an extra precaution in case an error occurs)
+        fileredListCampSites = (ArrayList<CampSite>) listCampSites.stream()
+                .filter(n -> n.getEstimatedCheckOut() != null)
+                .collect(Collectors.toList());
+
+        // Uses a Lambda function variant to sort the Campsites by checkout date
+        Collections.sort(fileredListCampSites, Comparator.comparing(CampSite::getEstimatedCheckOut));
+    }
+
+    private void UpdateScreenSortByRVTent() {
+        // Filters the CampSite objects that do not have an actual checkout date
+        // (ones that are still at the site)
+        fileredListCampSites = (ArrayList<CampSite>) listCampSites.stream()
+                .filter(n -> n.actualCheckOut == null)
+                .collect(Collectors.toList());
+
+        // Sorts the CampSite objects using a Lambda function
+
+        // Checks if there are CampSite objects that are Tents
+        Collections.sort(fileredListCampSites, Comparator.comparing(CampSite::isTent)
+                // Sorts the CampSites by name
+                .thenComparing(CampSite::getGuestName)
+                // Sorts to put the RV CampSites first
+                .thenComparing(CampSite::isRV)
+                // Sorts the CampSites by name again
+                .thenComparing(CampSite::getGuestName)
+                // If there are CampSites that have the same name,
+                // it sorts them by estimated checkout date instead
+                .thenComparing(CampSite::getEstimatedCheckOut));
+    }
+
+    private void UpdateScreenSortByTentRV() {
+        // Filters the CampSites that don't have an actual checkout date
+        // (ones that are still at the site)
+        fileredListCampSites = (ArrayList<CampSite>) listCampSites.stream()
+                .filter(n -> n.actualCheckOut == null)
+                .collect(Collectors.toList());
+
+        // Uses an anonymous class to sort the CampSites
+        Collections.sort(fileredListCampSites, new Comparator<CampSite>() {
+            @Override
+            // Overridden method from Comparator
+            public int compare(CampSite o1, CampSite o2) {
+
+                // Uses a helper method to compare the type of CampSite object
+                int typeCompare = o1.CompareTentThenRV().compareTo(o2.CompareTentThenRV());
+
+                // Sorts by Tent, then RV if there are 2 objects found that
+                // are not the same type
+                if (typeCompare != 0) {
+                    return typeCompare;
+                }
+
+                // After sorting by type of CampSite, the compare method
+                // will then sort by guest name
+                int nameCompare = o1.getGuestName().compareTo(o2.getGuestName());
+
+                if (nameCompare != 0) {
+                    return nameCompare;
+                }
+
+                // If there are instances of both the type of CampSite
+                // and the name being the same, the compare method will
+                // then sort by estimated checkout date instead.
+                return o1.getEstimatedCheckOut().compareTo(o2.estimatedCheckOut);
+            }
+        });
     }
 
     /***************************************************
@@ -379,8 +392,8 @@ public class ListModel extends AbstractTableModel {
             // depending on if the CampSite object is a Tent or RV
             case 4:
 
-            // Returns the number of tenters or wattage of the RV
-            // (depending on the type of CampSite)
+                // Returns the number of tenters or wattage of the RV
+                // (depending on the type of CampSite)
             case 5:
                 // Returns the wattage of the RV if the CampSite
                 // object is an RV
@@ -390,8 +403,8 @@ public class ListModel extends AbstractTableModel {
                     else
                         return "";
 
-                // Returns the number of tenters if the CampSite
-                // object is a Tent
+                    // Returns the number of tenters if the CampSite
+                    // object is a Tent
                 else {
                     if (col == 5)
                         return (((TentOnly) fileredListCampSites.get(row)).
@@ -399,7 +412,7 @@ public class ListModel extends AbstractTableModel {
                     else
                         return "";
                 }
-            // Default case if the cases do not match the given row or column
+                // Default case if the cases do not match the given row or column
             default:
                 throw new RuntimeException("Row,col out of range: " + row + " " + col);
         }
@@ -569,7 +582,7 @@ public class ListModel extends AbstractTableModel {
 
             case 4:
 
-            // The number of Tenters or Power of the RV
+                // The number of Tenters or Power of the RV
             case 5:
                 if (fileredListCampSites.get(row) instanceof RV)
                     if (col == 4)
@@ -585,8 +598,8 @@ public class ListModel extends AbstractTableModel {
                         return "";
                 }
 
-            // Defaults to throwing an exception if the given row or column
-            // is out of range
+                // Defaults to throwing an exception if the given row or column
+                // is out of range
             default:
                 throw new RuntimeException("Row,col out of range: " + row + " " + col);
         }
@@ -630,7 +643,7 @@ public class ListModel extends AbstractTableModel {
 
             case 4:
 
-            // The number of Tenters or Power of the RV
+                // The number of Tenters or Power of the RV
             case 5:
                 if (fileredListCampSites.get(row) instanceof RV)
                     if (col == 4)
@@ -646,8 +659,8 @@ public class ListModel extends AbstractTableModel {
                         return "";
                 }
 
-            // Defaults to throwing an exception if the given row or column
-            // is out of range
+                // Defaults to throwing an exception if the given row or column
+                // is out of range
             default:
                 throw new RuntimeException("Row,col out of range: " + row + " " + col);
         }
