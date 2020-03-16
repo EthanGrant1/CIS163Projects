@@ -61,6 +61,7 @@ public class ListModelTest {
     public void upDate() {
     }
 
+    //Tests saving an ArrayList of campsites to a special file
     @Test
     public void saveDatabase() throws ParseException {
         GregorianCalendar g1 = new GregorianCalendar();
@@ -81,6 +82,7 @@ public class ListModelTest {
         assertEquals(list1.getListCampSites(), list2.getListCampSites());
     }
 
+    //Tests loading an ArrayList of campsites from a special file
     @Test
     public void loadDatabase() throws ParseException {
         GregorianCalendar g1 = new GregorianCalendar();
@@ -104,6 +106,7 @@ public class ListModelTest {
         assertEquals(list1.getListCampSites(), list2.getListCampSites());
     }
 
+    //Tests saving an ArrayList of campsites to a text file
     @Test
     public void saveAsText() throws ParseException {
         GregorianCalendar g1 = new GregorianCalendar();
@@ -124,6 +127,7 @@ public class ListModelTest {
         assertEquals(list1.getListCampSites(), list2.getListCampSites());
     }
 
+    //Tests loading an ArrayList of campsites from a text file
     @Test
     public void loadFromText() throws ParseException {
         GregorianCalendar g1 = new GregorianCalendar();
@@ -147,6 +151,7 @@ public class ListModelTest {
         assertEquals(list1.getListCampSites(), list2.getListCampSites());
     }
 
+    //Tests createList() to make sure the default campsites are correct
     @Test
     public void createList() throws ParseException {
         ListModel list1 = new ListModel();
