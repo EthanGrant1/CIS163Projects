@@ -9,7 +9,7 @@ public abstract class
 CampSite implements Serializable {
 
     /** This verifies during deserialization that the
-       sender and receiver of an object are compatible */
+     sender and receiver of an object are compatible */
     private static final long serialVersionUID = 1L;
 
     /** The name of the person that is checking in */
@@ -35,7 +35,7 @@ CampSite implements Serializable {
                     GregorianCalendar checkIn,
                     GregorianCalendar estimatedCheckOut,
                     GregorianCalendar actualCheckOut) {
-        this.guestName = guestName;
+        this.guestName = guestName.trim();
         this.checkIn = checkIn;
         this.estimatedCheckOut = estimatedCheckOut;
         this.actualCheckOut = actualCheckOut;
