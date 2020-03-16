@@ -48,6 +48,27 @@ public class TentOnly extends CampSite {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        else if (o instanceof TentOnly){
+            TentOnly tent = (TentOnly) o;
+            //Checks to make sure everything is equal
+            if (this.numberOfTenters == tent.numberOfTenters &&
+                    this.checkIn.equals(tent.checkIn) &&
+                    this.estimatedCheckOut.equals(tent.estimatedCheckOut) &&
+                    this.guestName.equals(tent.guestName)) {
+                if (this.actualCheckOut == null && tent.actualCheckOut == null)
+                    return true;
+                else if(this.actualCheckOut != null && tent.actualCheckOut != null
+                        && this.actualCheckOut.equals(tent.actualCheckOut))
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
     public String toString() {
         return "TentOnly{" +
                 "numberOfTenters=" + numberOfTenters +

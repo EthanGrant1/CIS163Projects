@@ -43,6 +43,28 @@ public class RV extends CampSite {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        else if (o instanceof RV){
+            RV rv = (RV) o;
+            //Checks to make sure everything is equal
+            if (this.power == rv.power &&
+                    this.checkIn.equals(rv.checkIn) &&
+                    this.estimatedCheckOut.equals(rv.estimatedCheckOut) &&
+                    this.guestName.equals(rv.guestName)) {
+                if (this.actualCheckOut == null && rv.actualCheckOut == null)
+                    return true;
+                else if(this.actualCheckOut != null && rv.actualCheckOut != null
+                        && this.actualCheckOut.equals(rv.actualCheckOut))
+                    return true;
+            }
+        }
+        return false;
+    }
+
+
+    @Override
     public String toString() {
         return "RV{" +
                 "power=" + power +

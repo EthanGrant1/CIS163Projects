@@ -958,4 +958,26 @@ public class ListModel extends AbstractTableModel {
         this.enteredOverDueDate = enteredOverDueDate;
     }
 
+    /***************************************************
+     * This method returns the entire ArrayList of
+     * campsites (both current and checked out)
+     *
+     * @return ArrayList of all campsites
+     */
+    public ArrayList<CampSite> getListCampSites() {
+        return listCampSites;
+    }
+
+    /***************************************************
+     * This method sets the entire ArrayList of campsites
+     * to the input parameter's ArrayList
+     *
+     * @param listCampSites the ArrayList that
+     * this.listCampsites is being equal to
+     */
+    public void setListCampSites(ArrayList<CampSite> listCampSites) {
+        this.listCampSites = listCampSites;
+    }
+
+
 }
