@@ -252,6 +252,7 @@ public class ListModelTest {
     @Test
     public void createList() throws ParseException {
         ListModel list1 = new ListModel();
+        list1.setListCampSites(new ArrayList<CampSite>());
         list1.createList();
 
         ArrayList<CampSite> sites = list1.getListCampSites();
