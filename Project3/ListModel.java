@@ -71,6 +71,10 @@ public class ListModel extends AbstractTableModel {
         // Instantiates the list of Tents or RVs on the campsite
         listCampSites = new ArrayList<CampSite>();
 
+        // Turns lenient mode off so a date like 1/32/2020 is not
+        // allowed (normally it would count as 2/1/2020)
+        formatter.setLenient(false);
+
         // Updates the screen to whatever "display" currently is
         UpdateScreen();
 
@@ -837,12 +841,21 @@ public class ListModel extends AbstractTableModel {
                 checkIn.setTime(formatter.parse(scnr.nextLine()));
                 // The estimated check out date
                 estimatedCheckOut.setTime(formatter.parse(scnr.nextLine()));
+
+                // Estimated check out cannot be before check in
+                if(!estimatedCheckOut.after(checkIn))
+                    throw new IllegalArgumentException();
+
                 // Checks if the actual check out date is null or not
                 String temp = scnr.nextLine();
                 if(temp.equals("null"))
                     actualCheckOut = null;
                 else
                     actualCheckOut.setTime(formatter.parse(temp));
+
+                // Actual check out cannot be before check in
+                if(actualCheckOut != null && !actualCheckOut.after(checkIn))
+                    throw new IllegalArgumentException();
 
                 // Checks if the next parameter should be number of
                 // tenters or power to the RV
