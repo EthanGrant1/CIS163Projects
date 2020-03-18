@@ -4,6 +4,10 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -179,6 +183,13 @@ public class ListModelTest {
         assertEquals(list1.getListCampSites(), list2.getListCampSites());
     }
 
+    //Test saving with illegal characters
+    @Test (expected = RuntimeException.class)
+    public void saveDatabaseError(){
+        ListModel list1 = new ListModel();
+        list1.saveDatabase("|/*?");
+    }
+
     //Tests loading an ArrayList of campsites from a special file
     @Test
     public void loadDatabase() throws ParseException {
@@ -203,6 +214,19 @@ public class ListModelTest {
         assertEquals(list1.getListCampSites(), list2.getListCampSites());
     }
 
+    //Tests trying to load a nonsense file
+    @Test (expected = RuntimeException.class)
+    public void loadDatabaseError() throws IOException {
+        PrintWriter out = new PrintWriter(
+                new BufferedWriter(new FileWriter("LoadDatabaseError")));
+
+        out.println("uaobguiebg");
+        out.close();
+
+        ListModel list1 = new ListModel();
+        list1.loadDatabase("LoadDatabaseError");
+    }
+
     //Tests saving an ArrayList of campsites to a text file
     @Test
     public void saveAsText() throws ParseException {
@@ -222,6 +246,13 @@ public class ListModelTest {
         list2.loadText("SaveAsTextTest.txt");
 
         assertEquals(list1.getListCampSites(), list2.getListCampSites());
+    }
+
+    //Tests saving with illegal characters
+    @Test (expected = RuntimeException.class)
+    public void saveTextError(){
+        ListModel list1 = new ListModel();
+        list1.saveText("|/*?.txt");
     }
 
     //Tests loading an ArrayList of campsites from a text file
@@ -246,6 +277,139 @@ public class ListModelTest {
         list1.loadText("LoadTextTest.txt");
 
         assertEquals(list1.getListCampSites(), list2.getListCampSites());
+    }
+
+    //Tests loading a completely original file
+    @Test
+    public void loadFromText2() throws IOException, ParseException {
+        PrintWriter out = new PrintWriter(
+                new BufferedWriter(new FileWriter("LoadTextTest2.txt")));
+
+        out.println("2");
+        out.println("Project3.TentOnly");
+        out.println("Test1");
+        out.println("2/22/2020");
+        out.println("2/23/2020");
+        out.println("null");
+        out.println("3");
+
+        out.println("Project3.RV");
+        out.println("Test2");
+        out.println("2/23/2020");
+        out.println("2/24/2020");
+        out.println("2/24/2020");
+        out.println("100");
+
+        out.close();
+
+        GregorianCalendar g1 = new GregorianCalendar();
+        g1.setTime(formatter.parse("2/22/2020"));
+        GregorianCalendar g2 = new GregorianCalendar();
+        g2.setTime(formatter.parse("2/23/2020"));
+        GregorianCalendar g3 = new GregorianCalendar();
+        g3.setTime(formatter.parse("2/24/2020"));
+
+        TentOnly test1 = new TentOnly("Test1", g1, g2, null, 3);
+        RV test2 = new RV("Test2", g2, g3, g3, 100);
+
+        ListModel list1 = new ListModel();
+        list1.loadText("LoadTextTest2.txt");
+        ArrayList<CampSite> sites = list1.getListCampSites();
+
+        assertEquals(2, sites.size());
+        assertEquals(test1, sites.get(0));
+        assertEquals(test2, sites.get(1));
+
+    }
+
+    //Tests trying to load a nonsense file
+    @Test (expected = RuntimeException.class)
+    public void loadTextNonsenseError() throws IOException {
+        PrintWriter out = new PrintWriter(
+                new BufferedWriter(new FileWriter("LoadTextError.txt")));
+
+        out.println("uaobguiebg");
+        out.close();
+
+        ListModel list1 = new ListModel();
+        list1.loadText("LoadDatabaseError.txt");
+    }
+
+    //Tests when the estimated check out is before the check in
+    @Test (expected = RuntimeException.class)
+    public void loadTextEstCheckOutEarlyError() throws IOException{
+        PrintWriter out = new PrintWriter(
+                new BufferedWriter(new FileWriter("EstCheckOutBeforeCheckIn.txt")));
+
+        out.println("1");
+        out.println("Project3.TentOnly");
+        out.println("Test1");
+        out.println("2/22/2020");
+        out.println("2/21/2020");
+        out.println("null");
+        out.println("3");
+        out.close();
+
+        ListModel list1 = new ListModel();
+        list1.loadText("EstCheckOutBeforeCheckIn.txt");
+
+    }
+
+    //Tests when the actual check out is before the check in
+    @Test (expected = RuntimeException.class)
+    public void loadTextActualCheckOutEarlyError() throws IOException{
+        PrintWriter out = new PrintWriter(
+                new BufferedWriter(new FileWriter("ActualCheckOutBeforeCheckIn.txt")));
+
+        out.println("1");
+        out.println("Project3.TentOnly");
+        out.println("Test1");
+        out.println("2/22/2020");
+        out.println("2/23/2020");
+        out.println("2/21/2020");
+        out.println("3");
+        out.close();
+
+        ListModel list1 = new ListModel();
+        list1.loadText("ActualCheckOutBeforeCheckIn.txt");
+    }
+
+    //Tests when a negative number of tenters/power is given
+    @Test (expected = RuntimeException.class)
+    public void loadNegativeError() throws IOException{
+        PrintWriter out = new PrintWriter(
+                new BufferedWriter(new FileWriter("NegativeLoad.txt")));
+
+        out.println("1");
+        out.println("Project3.TentOnly");
+        out.println("Test1");
+        out.println("2/22/2020");
+        out.println("2/23/2020");
+        out.println("null");
+        out.println("-1");
+        out.close();
+
+        ListModel list1 = new ListModel();
+        list1.loadText("NegativeLoad.txt");
+    }
+
+    //Tests when the first line gives the incorrect number of sites in the file
+    @Test (expected = RuntimeException.class)
+    public void loadIncorrectNumSitesError() throws IOException{
+        PrintWriter out = new PrintWriter(
+                new BufferedWriter(new FileWriter("LoadIncorrectNumSites.txt")));
+
+        out.println("2");
+        out.println("Project3.TentOnly");
+        out.println("Test1");
+        out.println("2/22/2020");
+        out.println("2/23/2020");
+        out.println("null");
+        out.println("3");
+        out.close();
+
+        ListModel list1 = new ListModel();
+        list1.loadText("LoadIncorrectNumSites.txt");
     }
 
     //Tests createList() to make sure the default campsites are correct
@@ -277,6 +441,7 @@ public class ListModelTest {
         Date d6 = formatter.parse("3/29/2020");
         g6.setTime(d6);
 
+        assertEquals(10, sites.size());
         assertEquals(sites.get(0), new TentOnly("T1", g3, g2,null,4));
         assertEquals(sites.get(1), new TentOnly("T2", g5, g3,null, 5));
         assertEquals(sites.get(2), new TentOnly("T3", g3, g1, g1,7));
