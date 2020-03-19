@@ -145,8 +145,6 @@ public class ListModelTest {
     @Test
     public void getValueAtCurrentPark() {
         ListModel list1 = new ListModel();
-        list1.setListCampSites(new ArrayList<CampSite>());
-        list1.createList();
 
         // Setting display to current park
         ScreenDisplay test = ScreenDisplay.CurrentParkStatus;
@@ -239,8 +237,6 @@ public class ListModelTest {
     @Test (expected = RuntimeException.class)
     public void CurrentParkScreenError() {
         ListModel list1 = new ListModel();
-        list1.setListCampSites(new ArrayList<CampSite>());
-        list1.createList();
 
         // Setting display to current park
         ScreenDisplay test = ScreenDisplay.CurrentParkStatus;
@@ -255,8 +251,6 @@ public class ListModelTest {
     @Test
     public void getValueAtCheckOut() {
         ListModel list1 = new ListModel();
-        list1.setListCampSites(new ArrayList<CampSite>());
-        list1.createList();
 
         ScreenDisplay test = ScreenDisplay.CheckOutGuest;
         list1.setDisplay(test);
@@ -296,8 +290,6 @@ public class ListModelTest {
     @Test (expected = RuntimeException.class)
     public void CheckoutScreenError() {
         ListModel list1 = new ListModel();
-        list1.setListCampSites(new ArrayList<CampSite>());
-        list1.createList();
 
         // Setting display to current park
         ScreenDisplay test = ScreenDisplay.CheckOutGuest;
@@ -312,8 +304,6 @@ public class ListModelTest {
     @Test
     public void getValueAtOverDueScreen() {
         ListModel list1 = new ListModel();
-        list1.setListCampSites(new ArrayList<CampSite>());
-        list1.createList();
 
         // Sets the screen to the OverDue screen
         ScreenDisplay test = ScreenDisplay.OverDueScreen;
@@ -358,8 +348,6 @@ public class ListModelTest {
     @Test
     public void OverDueScreenNegDays() {
         ListModel list1 = new ListModel();
-        list1.setListCampSites(new ArrayList<CampSite>());
-        list1.createList();
 
         // Sets the screen to the OverDue screen
         ScreenDisplay test = ScreenDisplay.OverDueScreen;
@@ -398,8 +386,6 @@ public class ListModelTest {
     @Test
     public void getValueAtRVTentScreen() {
         ListModel list1 = new ListModel();
-        list1.setListCampSites(new ArrayList<CampSite>());
-        list1.createList();
 
         // Setting display to Sort by RV / Tent screen
         ScreenDisplay test = ScreenDisplay.SortByRVTent;
@@ -492,8 +478,6 @@ public class ListModelTest {
     @Test (expected = RuntimeException.class)
     public void SortByRVTentScreenError() {
         ListModel list1 = new ListModel();
-        list1.setListCampSites(new ArrayList<CampSite>());
-        list1.createList();
 
         // Setting display to current park
         ScreenDisplay test = ScreenDisplay.SortByRVTent;
@@ -508,8 +492,6 @@ public class ListModelTest {
     @Test
     public void getValueAtTentRVScreen() {
         ListModel list1 = new ListModel();
-        list1.setListCampSites(new ArrayList<CampSite>());
-        list1.createList();
 
         // Setting display to sort by Tent / RV screen
         ScreenDisplay test = ScreenDisplay.SortByTentRV;
@@ -602,8 +584,6 @@ public class ListModelTest {
     @Test (expected = RuntimeException.class)
     public void SortByTentRVScreenError() {
         ListModel list1 = new ListModel();
-        list1.setListCampSites(new ArrayList<CampSite>());
-        list1.createList();
 
         // Setting display to current park
         ScreenDisplay test = ScreenDisplay.SortByTentRV;
@@ -613,11 +593,11 @@ public class ListModelTest {
         list1.getValueAt(999,999);
     }
 
+    // Makes sure that all of the column names for the
+    // different screens are correct
     @Test
     public void getColumnName() {
         ListModel list1 = new ListModel();
-        list1.setListCampSites(new ArrayList<CampSite>());
-        list1.createList();
 
         // Setting display to current park
         ScreenDisplay test = ScreenDisplay.CurrentParkStatus;
@@ -676,41 +656,55 @@ public class ListModelTest {
         assert (list1.getColumnName(5).equals("Num. of Tenters"));
     }
 
+    // This method tests to make sure all guests are properly
+    // checked out and move from the current park screen
+    // to the check out guest screen
     @Test
-    public void remove() {
-        GUICampReservationSystem gui = new GUICampReservationSystem();
-
+    public void remove() throws ParseException {
         ListModel list1 = new ListModel();
-        list1.setListCampSites(new ArrayList<CampSite>());
-        list1.createList();
+
+        // Setting display to checked out guests to see how many
+        ScreenDisplay test = ScreenDisplay.CheckOutGuest;
+        list1.setDisplay(test);
+        int CheckOutSize = list1.getFileredListCampSites().size();
+        assert (CheckOutSize == 2);
 
         // Setting display to current park
-        ScreenDisplay test = ScreenDisplay.CurrentParkStatus;
+        test = ScreenDisplay.CurrentParkStatus;
         list1.setDisplay(test);
-
         int CurrentParkSize = list1.getFileredListCampSites().size();
-        int sizeNow = CurrentParkSize;
+        assert (CurrentParkSize == 8);
 
-        for (int i = 0; i < list1.getFileredListCampSites().size(); i++) {
-            CheckOutOnDialog dialog =
-                    new CheckOutOnDialog(gui, list1.get(i));
-                    sizeNow -= 1;
-                    list1.upDate(i, list1.getFileredListCampSites().get(i));
-                    assert (sizeNow == (CurrentParkSize - (i+1)));
+        Date d = formatter.parse("1/1/2021");
+        GregorianCalendar checkOut = new GregorianCalendar();
+        checkOut.setTime(d);
+
+        for (int i = 0; i < CurrentParkSize; i++) {
+            list1.get(0).setActualCheckOut(checkOut);
+            list1.upDate(i, list1.getFileredListCampSites().get(0));
+
+            //Checking to make sure the number of guests in the current
+            //park are decreasing each time one is checked out
+            assert (list1.getFileredListCampSites().size()
+                    == (CurrentParkSize - (i+1)));
         }
+
+        //Check to make sure no more guests are in the park
+        CurrentParkSize = list1.getFileredListCampSites().size();
+        assert (CurrentParkSize == 0);
 
         test = ScreenDisplay.CheckOutGuest;
         list1.setDisplay(test);
-        int CheckOutSize = list1.getFileredListCampSites().size();
 
-        assert (CheckOutSize == 6);
+        //Check to make sure all guests are checked out
+        CheckOutSize = list1.getFileredListCampSites().size();
+        assert (CheckOutSize == 10);
     }
 
+    // This method tests adding more campsites to the ArrayList
     @Test
     public void add() {
         ListModel list1 = new ListModel();
-        list1.setListCampSites(new ArrayList<CampSite>());
-        list1.createList();
 
         // Setting display to current park
         ScreenDisplay test = ScreenDisplay.CurrentParkStatus;
@@ -732,11 +726,12 @@ public class ListModelTest {
         assertEquals(18, list1.getFileredListCampSites().size());
     }
 
+
+    // This method tests using the get method to get campsites
+    // from the default filtered ArrayList for the current park
     @Test
     public void get() {
         ListModel list1 = new ListModel();
-        list1.setListCampSites(new ArrayList<CampSite>());
-        list1.createList();
 
         // Setting display to current park
         ScreenDisplay test = ScreenDisplay.CurrentParkStatus;
