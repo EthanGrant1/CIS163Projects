@@ -145,6 +145,10 @@ public class ListModel extends AbstractTableModel {
         fireTableStructureChanged();
     }
 
+    /****************************************************
+     * Helper method for UpdateScreen() if the current
+     * display is CurrentParkStatus
+     */
     private void UpdateScreenCurrentPark() {
         // A stream to filter the list of CampSite objects
         fileredListCampSites = (ArrayList<CampSite>) listCampSites.stream()
@@ -159,6 +163,10 @@ public class ListModel extends AbstractTableModel {
                 .compareTo(n2.guestName));
     }
 
+    /****************************************************
+     * Helper method for UpdateScreen() if the current
+     * display is CheckOutGuest
+     */
     private void UpdateScreenCheckOut() {
         // Filters the CampSite objects that have an actual checkout
         // date (ones that are no longer on the site)
@@ -174,6 +182,10 @@ public class ListModel extends AbstractTableModel {
         });
     }
 
+    /****************************************************
+     * Helper method for UpdateScreen() if the current
+     * display is OverDueScreen
+     */
     private void UpdateScreenOverDue() {
         // Filters the CampSite objects that have an estimated checkout date
         // (this is just an extra precaution in case an error occurs)
@@ -185,6 +197,10 @@ public class ListModel extends AbstractTableModel {
         Collections.sort(fileredListCampSites, Comparator.comparing(CampSite::getEstimatedCheckOut));
     }
 
+    /****************************************************
+     * Helper method for UpdateScreen() if the current
+     * display is SortByRVTent
+     */
     private void UpdateScreenSortByRVTent() {
         // Filters the CampSite objects that do not have an actual checkout date
         // (ones that are still at the site)
@@ -207,6 +223,10 @@ public class ListModel extends AbstractTableModel {
                 .thenComparing(CampSite::getEstimatedCheckOut));
     }
 
+    /****************************************************
+     * Helper method for UpdateScreen() if the current
+     * display is SortByTentRV
+     */
     private void UpdateScreenSortByTentRV() {
         // Filters the CampSites that don't have an actual checkout date
         // (ones that are still at the site)
