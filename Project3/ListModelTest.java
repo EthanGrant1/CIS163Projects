@@ -21,10 +21,6 @@ public class ListModelTest {
 
     private DateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
 
-    @Before
-    public void setUp() throws Exception {
-    }
-
     // This method checks all of the setDisplays and if the campsites
     // are sorted properly
     @Test
@@ -833,7 +829,7 @@ public class ListModelTest {
             assert (list1.get(i) instanceof TentOnly);
         }
     }
-    
+
     //Tests saving an ArrayList of campsites to a special file
     @Test
     public void saveDatabase() throws ParseException {
@@ -1124,5 +1120,13 @@ public class ListModelTest {
         assertEquals(sites.get(7), new RV("RV3",g5,g4,g3, 1000));
         assertEquals(sites.get(8), new RV("RV2", g3,g1,null, 2000));
         assertEquals(sites.get(9), new RV("RV2", g3,g6,null, 2000));
+    }
+
+    //Tries to create a list when the ArrayList is null
+    @Test (expected = RuntimeException.class)
+    public void createListError(){
+        ListModel list1 = new ListModel();
+        list1.setListCampSites(null);
+        list1.createList();
     }
 }

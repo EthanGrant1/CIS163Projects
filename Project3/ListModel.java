@@ -13,6 +13,19 @@ import java.time.temporal.ChronoUnit;
 import static Project3.ScreenDisplay.CurrentParkStatus;
 import static Project3.ScreenDisplay.SortByRVTent;
 
+/**********************************************************
+ * This class creates a database of Tents and RVs for
+ * a camp/park and contains information like the guest's name,
+ * when they checked in, when they are expected you check out,
+ * if/when they actually checked out, and how much their stay
+ * cost. ListModel will display a list of the CampSites
+ * based on what you are filtering by (if guests have checked
+ * out or not) or what you are sorting by (RVs or Tents).
+ *
+ *
+ * @author Ethan Grant and Tim Nguyen
+ */
+
 public class ListModel extends AbstractTableModel {
 
     /** An ArrayList of CampSite objects that's used
@@ -920,8 +933,6 @@ public class ListModel extends AbstractTableModel {
      * @throws RuntimeException if a ParseException is caught
      */
     public void createList() {
-        SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy");
-
         // Instantiating calenders for all of the dates
         GregorianCalendar g1 = new GregorianCalendar();
         GregorianCalendar g2 = new GregorianCalendar();
@@ -933,17 +944,17 @@ public class ListModel extends AbstractTableModel {
         try {
             // Sets all of the check in and checkout dates
             // to default parameters
-            Date d1 = df.parse("1/20/2020");
+            Date d1 = formatter.parse("1/20/2020");
             g1.setTime(d1);
-            Date d2 = df.parse("12/22/2020");
+            Date d2 = formatter.parse("12/22/2020");
             g2.setTime(d2);
-            Date d3 = df.parse("12/20/2019");
+            Date d3 = formatter.parse("12/20/2019");
             g3.setTime(d3);
-            Date d4 = df.parse("3/25/2020");
+            Date d4 = formatter.parse("3/25/2020");
             g4.setTime(d4);
-            Date d5 = df.parse("1/20/2010");
+            Date d5 = formatter.parse("1/20/2010");
             g5.setTime(d5);
-            Date d6 = df.parse("3/29/2020");
+            Date d6 = formatter.parse("3/29/2020");
             g6.setTime(d6);
 
             // Instantiates Tent CampSites with default parameters
@@ -974,7 +985,7 @@ public class ListModel extends AbstractTableModel {
             add(RV22);
             add(RV222);
 
-        } catch (ParseException e) {
+        } catch (Exception e) {
             throw new RuntimeException("Error in testing, creation of list");
         }
     }
