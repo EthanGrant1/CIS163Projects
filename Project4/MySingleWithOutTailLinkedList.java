@@ -78,7 +78,38 @@ public class MySingleWithOutTailLinkedList implements Serializable {
         (Suggestion, once your code is working for this step, back it up, and proceed on.)
         */
 
+        // Case 0: No list, just add the CampSite
+        if(top == null)
+            top = new Node(s,null);
 
+        // Case 1: Only RVs in the list and adding a Tent
+        // Add Tent to the top
+        if(s instanceof TentOnly && top.getData() instanceof RV)
+            top = new Node(s, top);
+
+        // Case 2: Only Tents in the list and adding an RV
+        // Add RV to the bottom
+        if(s instanceof RV && top.getData() instanceof  TentOnly){
+            Node temp = top;
+            //Loop until you get to the bottom
+            while(temp.getNext() != null)
+                temp = temp.getNext();
+            temp.setNext(new Node(s, null));
+        }
+
+        // Case 3: Adding a tent which has the same date as
+        // another tent and the name is less than the other
+
+        // Case 4: Adding a tent which has the same date as
+        // another tent and the name is greater than the other
+
+        // Case 5: Adding a RV which has the same date as
+        // another RV and the name is less than the other
+
+        // Case 6: Adding a RV which has the same date as
+        // another RV and the name is greater than the other
+
+        
     }
 
     /******************************************************
