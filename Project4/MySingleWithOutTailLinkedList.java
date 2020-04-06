@@ -91,40 +91,51 @@ public class MySingleWithOutTailLinkedList implements Serializable {
         }
 
         if (s instanceof TentOnly) {
+            addTent(s, temp, temp2, added);
+        }
 
-            // Case 1: Just add to top if top is currently an RV
-            if(top.getData() instanceof RV)
-                top = new Node(s, top);
+        else if (s instanceof RV) {
+            addRV(s, added);
+        }
+    }
 
-                // Case 2: If s's checkOut is before top's, make it the new top
-            else if(s.getEstimatedCheckOut().before(top.getData().getEstimatedCheckOut())){
+    private void addRV(CampSite s, boolean added) {
+        Node temp;
+        Node temp2;
+        temp = top;
+        temp2 = top;
+
+        // Case 1: There is no list
+        if (top == null) {
+            top = new Node(s, top);
+        }
+
+        else if (top.getData() instanceof RV) {
+            // Case 2: If s's checkOut is before top's, make it the new top
+            if (s.getEstimatedCheckOut().before(top.getData().getEstimatedCheckOut())) {
                 top = new Node(s, top);
             }
 
             // Case 3: If s's checkOut is the same as top's compare the names
-            else if(s.getEstimatedCheckOut().equals(top.getData().getEstimatedCheckOut())){
-                if(s.getGuestName().compareTo(top.getData().getGuestName()) < 0)
+            else if (s.getEstimatedCheckOut().equals(top.getData().getEstimatedCheckOut())) {
+                if (s.getGuestName().compareTo(top.getData().getGuestName()) < 0)
                     top = new Node(s, top);
                 else
                     top.setNext(new Node(s, top.getNext()));
             }
 
-            // Case 4: If s's checkOut is after top's and there is nothing after
-            // top or an RV after, make s top's next Node
-            else if(s.getEstimatedCheckOut().after(top.getData().getEstimatedCheckOut())
-                    && top.getNext() == null || s.getEstimatedCheckOut().after(top.getData().getEstimatedCheckOut())
-                    && top.getNext().getData() instanceof RV){
+            // Case 4: If s's checkOut is after top's
+            else if (s.getEstimatedCheckOut().after(top.getData().getEstimatedCheckOut())) {
                 top.setNext(new Node(s, top.getNext()));
             }
 
-            // Case 5: If s's checkOut is after top's but there are more Tents
             else if(s.getEstimatedCheckOut().after(top.getData().getEstimatedCheckOut())
-                    && top.getNext().getData() instanceof TentOnly){
+                    && top.getNext().getData() instanceof RV){
 
-                while (temp.getNext() != null && !(temp.getNext().getData() instanceof RV)
+                while (temp.getNext() != null && (temp.getNext().getData() instanceof RV)
                         && added == false) {
 
-                    // Case 5a: s has a checkOut date between 2 other tent's checkOut dates
+                    // Case 5a: s has a checkOut date between 2 other RV's checkOut dates
                     if(s.getEstimatedCheckOut().after(temp.getData().getEstimatedCheckOut())
                             && s.getEstimatedCheckOut().before(temp.getNext().getData().getEstimatedCheckOut())){
                         temp.setNext(new Node(s, temp.getNext()));
@@ -132,7 +143,7 @@ public class MySingleWithOutTailLinkedList implements Serializable {
                     }
 
                     // Case 5b: s has a checkOut somewhere in the middle and shares
-                    // it with another tent
+                    // it with another RV
                     if(s.getEstimatedCheckOut().equals(temp.getData().getEstimatedCheckOut())) {
                         if (s.getGuestName().compareTo(temp.getData().getGuestName()) < 0) {
                             while (temp2 != temp) {
@@ -146,154 +157,148 @@ public class MySingleWithOutTailLinkedList implements Serializable {
                     temp = temp.getNext();
                 }
 
-                // Case 5c: If the tent has not been added yet and temp's next is null or an RV, just add it
+                // Case 5c: If the RV has not been added yet, just add it in
                 if(added == false) {
                     temp.setNext(new Node(s, temp.getNext()));
                 }
             }
         }
 
-        else if (s instanceof RV) {
+        // Case 5: If there are tents in the list
+        else if (top.getData() instanceof TentOnly) {
+
             temp = top;
             temp2 = top;
 
-            // Case 1: There is no list
-            if (top == null) {
-                top = new Node(s, top);
+            // Loop to get past the tents first
+            while (temp.getNext() != null && temp.getNext().getData() instanceof TentOnly) {
+                temp = temp.getNext();
             }
 
-            else if (top.getData() instanceof RV) {
-                // Case 2: If s's checkOut is before top's, make it the new top
-                if (s.getEstimatedCheckOut().before(top.getData().getEstimatedCheckOut())) {
-                    top = new Node(s, top);
-                }
+            // Case 5a: No RVs in the list after the tents
+            if (temp.getNext() == null) {
+                temp.setNext(new Node(s, temp.getNext()));
+            }
 
-                // Case 3: If s's checkOut is the same as top's compare the names
-                else if (s.getEstimatedCheckOut().equals(top.getData().getEstimatedCheckOut())) {
-                    if (s.getGuestName().compareTo(top.getData().getGuestName()) < 0)
-                        top = new Node(s, top);
-                    else
-                        top.setNext(new Node(s, top.getNext()));
-                }
+            // There are RV's already in the list
 
-                // Case 4: If s's checkOut is after top's
-                else if (s.getEstimatedCheckOut().after(top.getData().getEstimatedCheckOut())) {
-                    top.setNext(new Node(s, top.getNext()));
-                }
+            // Case 2: If s's checkOut is before temp's, make it the new top
+            else if (s.getEstimatedCheckOut().before(temp.getNext().getData().getEstimatedCheckOut())) {
+                temp.setNext(new Node(s, temp.getNext()));
+            }
 
-                else if(s.getEstimatedCheckOut().after(top.getData().getEstimatedCheckOut())
-                        && top.getNext().getData() instanceof RV){
+            // Case 3: If s's checkOut is the same as temp's compare the names
+            else if (s.getEstimatedCheckOut().equals(temp.getNext().getData().getEstimatedCheckOut())) {
+                if (s.getGuestName().compareTo(temp.getNext().getData().getGuestName()) < 0)
+                    temp.setNext(new Node(s, temp.getNext()));
+                else
+                    temp.getNext().setNext(new Node(s, temp.getNext().getNext()));
+            }
 
-                    while (temp.getNext() != null && (temp.getNext().getData() instanceof RV)
-                            && added == false) {
+            // Case 4: If s's checkOut is after temp's
+            else if (s.getEstimatedCheckOut().after(temp.getNext().getData().getEstimatedCheckOut())
+                    && temp.getNext().getNext() == null) {
+                temp.getNext().setNext(new Node(s, temp.getNext().getNext()));
+            }
 
-                        // Case 5a: s has a checkOut date between 2 other RV's checkOut dates
-                        if(s.getEstimatedCheckOut().after(temp.getData().getEstimatedCheckOut())
-                                && s.getEstimatedCheckOut().before(temp.getNext().getData().getEstimatedCheckOut())){
-                            temp.setNext(new Node(s, temp.getNext()));
-                            added = true;
-                        }
 
-                        // Case 5b: s has a checkOut somewhere in the middle and shares
-                        // it with another RV
-                        if(s.getEstimatedCheckOut().equals(temp.getData().getEstimatedCheckOut())) {
-                            if (s.getGuestName().compareTo(temp.getData().getGuestName()) < 0) {
-                                while (temp2 != temp) {
-                                    temp2 = temp2.getNext();
-                                }
-                                temp = temp2;
-                            }
-                            temp.setNext(new Node(s, temp.getNext()));
-                        }
+            // If s has an estimated checkout after the first RV
+            else if (s.getEstimatedCheckOut().after(temp.getNext().getData().getEstimatedCheckOut())
+                    && temp.getNext().getNext().getData() instanceof RV) {
 
-                        temp = temp.getNext();
+                temp = temp.getNext();
+
+                while (temp.getNext() != null && (temp.getNext().getData() instanceof RV)
+                        && added == false) {
+
+                    // Case 5b: s has a checkOut date between 2 other RV's checkOut dates
+                    if (s.getEstimatedCheckOut().after(temp.getData().getEstimatedCheckOut())
+                            && s.getEstimatedCheckOut().before(temp.getNext().getData().getEstimatedCheckOut())) {
+                        temp.setNext(new Node(s, temp.getNext()));
+                        added = true;
                     }
 
-                    // Case 5c: If the RV has not been added yet, just add it in
-                    if(added == false) {
+                    // Case 5c: s has a checkOut somewhere in the middle and shares
+                    // it with another RV
+                    if (s.getEstimatedCheckOut().equals(temp.getData().getEstimatedCheckOut())) {
+                        if (s.getGuestName().compareTo(temp.getData().getGuestName()) < 0) {
+                            while (temp2 != temp) {
+                                temp2 = temp2.getNext();
+                            }
+                            temp = temp2;
+                        }
                         temp.setNext(new Node(s, temp.getNext()));
                     }
-                }
-            }
 
-            // Case 5: If there are tents in the list
-            else if (top.getData() instanceof TentOnly) {
-
-                temp = top;
-                temp2 = top;
-
-                // Loop to get past the tents first
-                while (temp.getNext() != null && temp.getNext().getData() instanceof TentOnly) {
                     temp = temp.getNext();
                 }
 
-                // Case 5a: No RVs in the list after the tents
-                if (temp.getNext() == null) {
+                // Case 5d: If the RV has not been added yet just add it in
+                if (added == false) {
+                    temp.setNext(new Node(s, temp.getNext()));
+                }
+            }
+        }
+    }
+
+    private void addTent(CampSite s, Node temp, Node temp2, boolean added) {
+        // Case 1: Just add to top if top is currently an RV
+        if(top.getData() instanceof RV)
+            top = new Node(s, top);
+
+            // Case 2: If s's checkOut is before top's, make it the new top
+        else if(s.getEstimatedCheckOut().before(top.getData().getEstimatedCheckOut())){
+            top = new Node(s, top);
+        }
+
+        // Case 3: If s's checkOut is the same as top's compare the names
+        else if(s.getEstimatedCheckOut().equals(top.getData().getEstimatedCheckOut())){
+            if(s.getGuestName().compareTo(top.getData().getGuestName()) < 0)
+                top = new Node(s, top);
+            else
+                top.setNext(new Node(s, top.getNext()));
+        }
+
+        // Case 4: If s's checkOut is after top's and there is nothing after
+        // top or an RV after, make s top's next Node
+        else if(s.getEstimatedCheckOut().after(top.getData().getEstimatedCheckOut())
+                && top.getNext() == null || s.getEstimatedCheckOut().after(top.getData().getEstimatedCheckOut())
+                && top.getNext().getData() instanceof RV){
+            top.setNext(new Node(s, top.getNext()));
+        }
+
+        // Case 5: If s's checkOut is after top's but there are more Tents
+        else if(s.getEstimatedCheckOut().after(top.getData().getEstimatedCheckOut())
+                && top.getNext().getData() instanceof TentOnly){
+
+            while (temp.getNext() != null && !(temp.getNext().getData() instanceof RV)
+                    && added == false) {
+
+                // Case 5a: s has a checkOut date between 2 other tent's checkOut dates
+                if(s.getEstimatedCheckOut().after(temp.getData().getEstimatedCheckOut())
+                        && s.getEstimatedCheckOut().before(temp.getNext().getData().getEstimatedCheckOut())){
+                    temp.setNext(new Node(s, temp.getNext()));
+                    added = true;
+                }
+
+                // Case 5b: s has a checkOut somewhere in the middle and shares
+                // it with another tent
+                if(s.getEstimatedCheckOut().equals(temp.getData().getEstimatedCheckOut())) {
+                    if (s.getGuestName().compareTo(temp.getData().getGuestName()) < 0) {
+                        while (temp2 != temp) {
+                            temp2 = temp2.getNext();
+                        }
+                        temp = temp2;
+                    }
                     temp.setNext(new Node(s, temp.getNext()));
                 }
 
-                // There are RV's already in the list
+                temp = temp.getNext();
+            }
 
-                // Case 2: If s's checkOut is before temp's, make it the new top
-                else if (s.getEstimatedCheckOut().before(temp.getNext().getData().getEstimatedCheckOut())) {
-                    temp.setNext(new Node(s, temp.getNext().getNext()));
-                }
-
-                // Case 3: If s's checkOut is the same as temp's compare the names
-                else if (s.getEstimatedCheckOut().equals(temp.getNext().getData().getEstimatedCheckOut())) {
-                    if (s.getGuestName().compareTo(temp.getNext().getData().getGuestName()) < 0)
-                        temp.setNext(new Node(s, temp.getNext()));
-                    else
-                        temp.getNext().setNext(new Node(s, temp.getNext().getNext()));
-                }
-
-                // Case 4: If s's checkOut is after temp's
-                else if (s.getEstimatedCheckOut().after(temp.getNext().getData().getEstimatedCheckOut())) {
-                    temp.getNext().setNext(new Node(s, temp.getNext().getNext()));
-                }
-
-
-                // If s has an estimated checkout after the first RV
-                else if (s.getEstimatedCheckOut().after(temp.getNext().getData().getEstimatedCheckOut())
-                        && temp.getNext().getNext().getData() instanceof RV) {
-
-                    temp = top;
-                    temp2 = top;
-
-                    while (temp.getNext() != null && temp.getNext().getData() instanceof TentOnly) {
-                        temp = temp.getNext();
-                    }
-
-                    while (temp.getNext() != null && (temp.getNext().getData() instanceof RV)
-                            && added == false) {
-
-                        // Case 5b: s has a checkOut date between 2 other RV's checkOut dates
-                        if (s.getEstimatedCheckOut().after(temp.getData().getEstimatedCheckOut())
-                                && s.getEstimatedCheckOut().before(temp.getNext().getData().getEstimatedCheckOut())) {
-                            temp.setNext(new Node(s, temp.getNext()));
-                            added = true;
-                        }
-
-                        // Case 5c: s has a checkOut somewhere in the middle and shares
-                        // it with another RV
-                        if (s.getEstimatedCheckOut().equals(temp.getData().getEstimatedCheckOut())) {
-                            if (s.getGuestName().compareTo(temp.getData().getGuestName()) < 0) {
-                                while (temp2 != temp) {
-                                    temp2 = temp2.getNext();
-                                }
-                                temp = temp2;
-                            }
-                            temp.setNext(new Node(s, temp.getNext()));
-                        }
-
-                        temp = temp.getNext();
-                    }
-
-                    // Case 5d: If the RV has not been added yet just add it in
-                    if (added == false) {
-                        temp.setNext(new Node(s, temp.getNext()));
-                    }
-                }
+            // Case 5c: If the tent has not been added yet and temp's next is null or an RV, just add it
+            if(added == false) {
+                temp.setNext(new Node(s, temp.getNext()));
             }
         }
     }
