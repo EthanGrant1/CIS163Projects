@@ -125,7 +125,8 @@ public class MySingleWithOutTailLinkedList implements Serializable {
             }
 
             // Case 4: If s's checkOut is after top's
-            else if (s.getEstimatedCheckOut().after(top.getData().getEstimatedCheckOut())) {
+            else if (s.getEstimatedCheckOut().after(top.getData().getEstimatedCheckOut())
+                    && top.getNext() == null) {
                 top.setNext(new Node(s, top.getNext()));
             }
 
