@@ -160,7 +160,8 @@ public class MySingleWithOutTailLinkedList implements Serializable {
                         }
                         else {
                             while (s.getEstimatedCheckOut().equals(temp.getData().getEstimatedCheckOut()) &&
-                                    s.getGuestName().compareTo(temp.getData().getGuestName()) > 0) {
+                                    s.getGuestName().compareTo(temp.getData().getGuestName()) > 0
+                                    && temp.getNext() != null) {
                                 temp = temp.getNext();
                             }
                             temp.setNext(new Node(s, temp.getNext()));
@@ -246,7 +247,8 @@ public class MySingleWithOutTailLinkedList implements Serializable {
                         }
                         else {
                             while (s.getEstimatedCheckOut().equals(temp.getData().getEstimatedCheckOut()) &&
-                                    s.getGuestName().compareTo(temp.getData().getGuestName()) > 0) {
+                                    s.getGuestName().compareTo(temp.getData().getGuestName()) > 0
+                                    && temp.getNext() != null) {
                                 temp = temp.getNext();
                             }
                             temp.setNext(new Node(s, temp.getNext()));
@@ -283,7 +285,8 @@ public class MySingleWithOutTailLinkedList implements Serializable {
             else {
                 temp = top;
                 while (temp.getNext() != null && s.getEstimatedCheckOut().equals(temp.getData().getEstimatedCheckOut())
-                        && s.getGuestName().compareTo(temp.getData().getGuestName()) > 0) {
+                        && s.getGuestName().compareTo(temp.getData().getGuestName()) > 0
+                        && temp.getNext() != null) {
                     temp = temp.getNext();
                 }
                 temp.setNext(new Node(s, temp.getNext()));
@@ -323,7 +326,8 @@ public class MySingleWithOutTailLinkedList implements Serializable {
                     }
                     else {
                         while (s.getEstimatedCheckOut().equals(temp.getData().getEstimatedCheckOut()) &&
-                                s.getGuestName().compareTo(temp.getData().getGuestName()) > 0) {
+                                s.getGuestName().compareTo(temp.getData().getGuestName()) > 0
+                                && temp.getNext() != null) {
                             temp = temp.getNext();
                         }
                         temp.setNext(new Node(s, temp.getNext()));
