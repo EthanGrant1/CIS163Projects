@@ -250,6 +250,7 @@ public class MySingleWithOutTailLinkedList implements Serializable {
                                 temp = temp.getNext();
                             }
                             temp.setNext(new Node(s, temp.getNext()));
+                            added = true;
                         }
                     }
 
@@ -326,6 +327,7 @@ public class MySingleWithOutTailLinkedList implements Serializable {
                             temp = temp.getNext();
                         }
                         temp.setNext(new Node(s, temp.getNext()));
+                        added = true;
                     }
                 }
                 temp = temp.getNext();
