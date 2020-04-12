@@ -149,7 +149,7 @@ public class MySingleWithOutTailLinkedList implements Serializable {
                 }
                 // Loop until s's name is no longer greater than temp's name
                 while (temp.getNext() != null &&
-                        s.getEstimatedCheckOut().equals(temp.getData().getEstimatedCheckOut()) &&
+                        s.getEstimatedCheckOut().equals(temp.getNext().getData().getEstimatedCheckOut()) &&
                         s.getGuestName().compareTo(temp.getData().getGuestName()) > 0) {
                     temp = temp.getNext();
                 }
@@ -201,9 +201,9 @@ public class MySingleWithOutTailLinkedList implements Serializable {
                         // Else, if s's name is greater than or equal to temp's
                         else {
                             // Loop until s's name is no longer greater than temp's
-                            while (s.getEstimatedCheckOut().equals(temp.getData().getEstimatedCheckOut()) &&
-                                    s.getGuestName().compareTo(temp.getData().getGuestName()) > 0
-                                    && temp.getNext() != null) {
+                            while (temp.getNext() != null &&
+                                    s.getEstimatedCheckOut().equals(temp.getNext().getData().getEstimatedCheckOut()) &&
+                                    s.getGuestName().compareTo(temp.getData().getGuestName()) > 0) {
                                 temp = temp.getNext();
                             }
                             // Create s's Node
@@ -257,7 +257,7 @@ public class MySingleWithOutTailLinkedList implements Serializable {
                 if (s.getGuestName().compareTo(temp.getNext().getData().getGuestName()) > 0) {
                     // Loop until s's name is no longer greater than temp's
                     while (temp.getNext() != null &&
-                            s.getEstimatedCheckOut().equals(temp.getData().getEstimatedCheckOut()) &&
+                            s.getEstimatedCheckOut().equals(temp.getNext().getData().getEstimatedCheckOut()) &&
                             s.getGuestName().compareTo(temp.getData().getGuestName()) > 0) {
                         temp = temp.getNext();
                     }
@@ -295,7 +295,7 @@ public class MySingleWithOutTailLinkedList implements Serializable {
 
                     // Case 6g: s has a checkOut somewhere in the middle and shares
                     // it with another RV
-                    if (s.getEstimatedCheckOut().equals(temp.getData().getEstimatedCheckOut())) {
+                    else if (s.getEstimatedCheckOut().equals(temp.getData().getEstimatedCheckOut())) {
                         // If s's guest name is before temp's
                         if (s.getGuestName().compareTo(temp.getData().getGuestName()) < 0) {
                             // Loop until temp2 is one position before temp
@@ -313,9 +313,9 @@ public class MySingleWithOutTailLinkedList implements Serializable {
                         // If s's guest name is greater than or equal to temp's
                         else {
                             // Loop until s's guest name is no longer greater than temp's
-                            while (s.getEstimatedCheckOut().equals(temp.getData().getEstimatedCheckOut()) &&
-                                    s.getGuestName().compareTo(temp.getData().getGuestName()) > 0
-                                    && temp.getNext() != null) {
+                            while (temp.getNext() != null &&
+                                    s.getEstimatedCheckOut().equals(temp.getNext().getData().getEstimatedCheckOut()) &&
+                                    s.getGuestName().compareTo(temp.getData().getGuestName()) > 0) {
                                 temp = temp.getNext();
                             }
                             // Create s's Node
@@ -358,9 +358,8 @@ public class MySingleWithOutTailLinkedList implements Serializable {
                 // temp is set equal to the top of the list
                 temp = top;
                 // Loop until s's name is no longer greater than temp's
-                while (temp.getNext() != null && s.getEstimatedCheckOut().equals(temp.getData().getEstimatedCheckOut())
-                        && s.getGuestName().compareTo(temp.getData().getGuestName()) > 0
-                        && temp.getNext() != null) {
+                while (temp.getNext() != null && s.getEstimatedCheckOut().equals(temp.getNext().getData().getEstimatedCheckOut())
+                        && s.getGuestName().compareTo(temp.getData().getGuestName()) > 0) {
                     temp = temp.getNext();
                 }
                 // Create s's Node
@@ -395,7 +394,7 @@ public class MySingleWithOutTailLinkedList implements Serializable {
 
                 // Case 5b: s has a checkOut somewhere in the middle and shares
                 // it with another tent
-                if (s.getEstimatedCheckOut().equals(temp.getData().getEstimatedCheckOut())) {
+                else if (s.getEstimatedCheckOut().equals(temp.getData().getEstimatedCheckOut())) {
                     // If s's name is less than temp's
                     if (s.getGuestName().compareTo(temp.getData().getGuestName()) < 0) {
                         // Loop until temp2 is one position less than temp's
@@ -413,9 +412,9 @@ public class MySingleWithOutTailLinkedList implements Serializable {
                     // If s's name is greater than or equal to temp's
                     else {
                         // Loop until s's name is no longer greater than temp's
-                        while (s.getEstimatedCheckOut().equals(temp.getData().getEstimatedCheckOut()) &&
-                                s.getGuestName().compareTo(temp.getData().getGuestName()) > 0
-                                && temp.getNext() != null) {
+                        while (temp.getNext() != null
+                                && s.getEstimatedCheckOut().equals(temp.getNext().getData().getEstimatedCheckOut()) &&
+                                s.getGuestName().compareTo(temp.getData().getGuestName()) > 0) {
                             temp = temp.getNext();
                         }
                         // Create s's Node
