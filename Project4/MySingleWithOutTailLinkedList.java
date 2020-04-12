@@ -82,8 +82,6 @@ public class MySingleWithOutTailLinkedList implements Serializable {
 
         // The temp pointer used to add campsites to the list
         Node temp = top;
-        // A temp pointer to be used for sorting purposes
-        Node temp2 = top;
         // Whether or not a campsite has been added or not
         boolean added = false;
 
@@ -91,17 +89,16 @@ public class MySingleWithOutTailLinkedList implements Serializable {
         // Case 0: there is no list, just add it
         if (temp == null) {
             top = new Node(s, null);
-            return;
         }
 
         // Adding a tent using a helper method
-        if (s instanceof TentOnly) {
-            addTent(s, temp, temp2, added);
+        else if (s instanceof TentOnly) {
+            addTent(s, temp, added);
         }
 
         // Adding an RV using a helper method
         else if (s instanceof RV) {
-            addRV(s, added);
+            addRV(s, temp, added);
         }
     }
 
@@ -113,17 +110,7 @@ public class MySingleWithOutTailLinkedList implements Serializable {
      * @param added is a boolean to check if the campsite
      *              has been added or not
      */
-    private void addRV(CampSite s, boolean added) {
-        // Initializes some local variables
-
-        // A temp pointer used to add the campsite to the list
-        Node temp;
-        // A temp pointer used for sorting purposes. Acts like a
-        // "getPrevious" pointer
-        Node temp2;
-        // Setting the temp pointers to the top of the list
-        temp = top;
-        temp2 = top;
+    private void addRV(CampSite s, Node temp, boolean added) {
 
         // Case 1: There is no list
         if (top == null) {
@@ -146,15 +133,15 @@ public class MySingleWithOutTailLinkedList implements Serializable {
                 // Else, use the temp pointer
                 else {
                     temp = top;
+                    // Loop until s's name is no longer greater than temp's name
+                    while (temp.getNext() != null &&
+                            s.getEstimatedCheckOut().equals(temp.getNext().getData().getEstimatedCheckOut()) &&
+                            s.getGuestName().compareTo(temp.getNext().getData().getGuestName()) > 0) {
+                        temp = temp.getNext();
+                    }
+                    // Create a new Node for s
+                    temp.setNext(new Node(s, temp.getNext()));
                 }
-                // Loop until s's name is no longer greater than temp's name
-                while (temp.getNext() != null &&
-                        s.getEstimatedCheckOut().equals(temp.getNext().getData().getEstimatedCheckOut()) &&
-                        s.getGuestName().compareTo(temp.getData().getGuestName()) > 0) {
-                    temp = temp.getNext();
-                }
-                // Create a new Node for s
-                temp.setNext(new Node(s, temp.getNext()));
             }
 
             // Case 4: If s's checkOut is after top's and there is no Node after top,
@@ -184,15 +171,9 @@ public class MySingleWithOutTailLinkedList implements Serializable {
 
                     // Case 5b: s has a checkOut somewhere in the middle and shares
                     // it with another RV
-                    if (s.getEstimatedCheckOut().equals(temp.getData().getEstimatedCheckOut())) {
+                    else if (s.getEstimatedCheckOut().equals(temp.getNext().getData().getEstimatedCheckOut())) {
                         // If s's name is less than temp's
-                        if (s.getGuestName().compareTo(temp.getData().getGuestName()) < 0) {
-                            // Loop to place temp2 one spot above temp in the list
-                            while (temp2.getNext() != temp && temp2.getNext() != null) {
-                                temp2 = temp2.getNext();
-                            }
-                            // Set temp equal to temp2 effectively moving it back one position
-                            temp = temp2;
+                        if (s.getGuestName().compareTo(temp.getNext().getData().getGuestName()) < 0) {
                             // Create s's Node
                             temp.setNext(new Node(s, temp.getNext()));
                             // A campsite has been added, therefore the loop ends
@@ -203,7 +184,7 @@ public class MySingleWithOutTailLinkedList implements Serializable {
                             // Loop until s's name is no longer greater than temp's
                             while (temp.getNext() != null &&
                                     s.getEstimatedCheckOut().equals(temp.getNext().getData().getEstimatedCheckOut()) &&
-                                    s.getGuestName().compareTo(temp.getData().getGuestName()) > 0) {
+                                    s.getGuestName().compareTo(temp.getNext().getData().getGuestName()) > 0) {
                                 temp = temp.getNext();
                             }
                             // Create s's Node
@@ -228,7 +209,6 @@ public class MySingleWithOutTailLinkedList implements Serializable {
 
             // Initializes the temp variables to be at the top of the list
             temp = top;
-            temp2 = top;
 
             // Loop to get past the tents first
             while (temp.getNext() != null && temp.getNext().getData() instanceof TentOnly) {
@@ -258,7 +238,7 @@ public class MySingleWithOutTailLinkedList implements Serializable {
                     // Loop until s's name is no longer greater than temp's
                     while (temp.getNext() != null &&
                             s.getEstimatedCheckOut().equals(temp.getNext().getData().getEstimatedCheckOut()) &&
-                            s.getGuestName().compareTo(temp.getData().getGuestName()) > 0) {
+                            s.getGuestName().compareTo(temp.getNext().getData().getGuestName()) > 0) {
                         temp = temp.getNext();
                     }
                 }
@@ -295,16 +275,9 @@ public class MySingleWithOutTailLinkedList implements Serializable {
 
                     // Case 6g: s has a checkOut somewhere in the middle and shares
                     // it with another RV
-                    else if (s.getEstimatedCheckOut().equals(temp.getData().getEstimatedCheckOut())) {
+                    else if (s.getEstimatedCheckOut().equals(temp.getNext().getData().getEstimatedCheckOut())) {
                         // If s's guest name is before temp's
-                        if (s.getGuestName().compareTo(temp.getData().getGuestName()) < 0) {
-                            // Loop until temp2 is one position before temp
-                            while (temp2.getNext() != temp && temp2.getNext() != null) {
-                                temp2 = temp2.getNext();
-                            }
-                            // Set temp equal to temp2, effectively moving it one
-                            // position back in the list
-                            temp = temp2;
+                        if (s.getGuestName().compareTo(temp.getNext().getData().getGuestName()) < 0) {
                             // Create s's Node
                             temp.setNext(new Node(s, temp.getNext()));
                             // A campsite has been added, therefore the loop ends
@@ -315,7 +288,7 @@ public class MySingleWithOutTailLinkedList implements Serializable {
                             // Loop until s's guest name is no longer greater than temp's
                             while (temp.getNext() != null &&
                                     s.getEstimatedCheckOut().equals(temp.getNext().getData().getEstimatedCheckOut()) &&
-                                    s.getGuestName().compareTo(temp.getData().getGuestName()) > 0) {
+                                    s.getGuestName().compareTo(temp.getNext().getData().getGuestName()) > 0) {
                                 temp = temp.getNext();
                             }
                             // Create s's Node
@@ -336,7 +309,7 @@ public class MySingleWithOutTailLinkedList implements Serializable {
         }
     }
 
-    private void addTent(CampSite s, Node temp, Node temp2, boolean added) {
+    private void addTent(CampSite s, Node temp, boolean added) {
         // Case 1: Just add to top if top is currently an RV
         if (top.getData() instanceof RV) {
             top = new Node(s, top);
@@ -358,8 +331,9 @@ public class MySingleWithOutTailLinkedList implements Serializable {
                 // temp is set equal to the top of the list
                 temp = top;
                 // Loop until s's name is no longer greater than temp's
-                while (temp.getNext() != null && s.getEstimatedCheckOut().equals(temp.getNext().getData().getEstimatedCheckOut())
-                        && s.getGuestName().compareTo(temp.getData().getGuestName()) > 0) {
+                while (temp.getNext() != null && !(temp.getNext().getData() instanceof RV) &&
+                        s.getEstimatedCheckOut().equals(temp.getNext().getData().getEstimatedCheckOut())
+                        && s.getGuestName().compareTo(temp.getNext().getData().getGuestName()) > 0) {
                     temp = temp.getNext();
                 }
                 // Create s's Node
@@ -394,16 +368,9 @@ public class MySingleWithOutTailLinkedList implements Serializable {
 
                 // Case 5b: s has a checkOut somewhere in the middle and shares
                 // it with another tent
-                else if (s.getEstimatedCheckOut().equals(temp.getData().getEstimatedCheckOut())) {
+                else if (s.getEstimatedCheckOut().equals(temp.getNext().getData().getEstimatedCheckOut())) {
                     // If s's name is less than temp's
-                    if (s.getGuestName().compareTo(temp.getData().getGuestName()) < 0) {
-                        // Loop until temp2 is one position less than temp's
-                        while (temp2.getNext() != temp && temp2.getNext() != null) {
-                            temp2 = temp2.getNext();
-                        }
-                        // Temp is set equal to temp2, effectively moving it one
-                        // position back in the list
-                        temp = temp2;
+                    if (s.getGuestName().compareTo(temp.getNext().getData().getGuestName()) < 0) {
                         // Create s's Node
                         temp.setNext(new Node(s, temp.getNext()));
                         // A campsite has been added, therefore the loop ends
@@ -412,9 +379,9 @@ public class MySingleWithOutTailLinkedList implements Serializable {
                     // If s's name is greater than or equal to temp's
                     else {
                         // Loop until s's name is no longer greater than temp's
-                        while (temp.getNext() != null
+                        while (temp.getNext() != null && !(temp.getNext().getData() instanceof RV)
                                 && s.getEstimatedCheckOut().equals(temp.getNext().getData().getEstimatedCheckOut()) &&
-                                s.getGuestName().compareTo(temp.getData().getGuestName()) > 0) {
+                                s.getGuestName().compareTo(temp.getNext().getData().getGuestName()) > 0) {
                             temp = temp.getNext();
                         }
                         // Create s's Node
